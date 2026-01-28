@@ -1,0 +1,18 @@
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route("/")
+def dashboard():
+    return render_template("dashboard-links.html")
+
+@app.route("/dashboard-student")
+def student():
+    return render_template("dashboard-student.html")
+@app.route("/dashboard-docent")
+def docent():
+    return render_template("dashboard-docent.html")
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
