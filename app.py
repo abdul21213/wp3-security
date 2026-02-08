@@ -10,6 +10,10 @@ def index():
 def login_docent():
     return render_template("login_docent.html")
 
+@app.route("/login_student")
+def login_student():
+    return render_template("login_student.html")
+
 @app.route("/dashboard-student")
 def student():
     return render_template("dashboard-student.html")
