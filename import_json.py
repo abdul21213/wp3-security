@@ -47,25 +47,25 @@ def get_or_create_dataset(cursor, leerling_id, vak_id):
     )
     return cursor.lastrowid
 
-def get_or_create_snapshot(cursor, leerdoel_id, leerling_id, datum, bron, bron_id):
+def get_or_create_snapshot(cursor, leerdoel_id, dataset_id, datum, bron, bron_id):
     cursor.execute("""
         SELECT snapshot_id
         FROM snapshot
         WHERE leerdoel_id = ?
-          AND leerling_id = ?
+          AND dataset_id = ?
           AND datum = ?
           AND bron = ?
           AND bron_id = ?
-    """, (leerdoel_id, leerling_id, datum, bron, bron_id))
+    """, (leerdoel_id, dataset_id, datum, bron, bron_id))
 
     row = cursor.fetchone()
     if row:
         return row[0]
 
     cursor.execute("""
-        INSERT INTO snapshot (leerdoel_id, leerling_id, datum, bron, bron_id)
+        INSERT INTO snapshot (leerdoel_id, dataset_id, datum, bron, bron_id)
         VALUES (?, ?, ?, ?, ?)
-    """, (leerdoel_id, leerling_id, datum, bron, bron_id))
+    """, (leerdoel_id, dataset_id, datum, bron, bron_id))
 
     return cursor.lastrowid
 
@@ -74,122 +74,111 @@ def get_or_create_snapshot(cursor, leerdoel_id, leerling_id, datum, bron, bron_i
 with open("data-sample-small.json", "r", encoding="utf-8") as file:
     data = json.load(file)
 
-entry = data["entries"][0]
 
 # Database verbinden
 
-conn = sqlite3.connect("database.db")
+conn = sqlite3.connect(r"C:\Users\Karin\Desktop\wp3-2026-rest-1b6-fox\database.db")
 cursor = conn.cursor()
 
-# Leerling en vak opslaan
+for entry in data["entries"]:
+    # Leerling en vak opslaan
+    student = entry["student"]
+    subject = entry["subject"]
 
-student = entry["student"]
-subject = entry["subject"]
-
-cursor.execute("""
-    INSERT OR IGNORE INTO leerling (leerling_id, voornaam, achternaam, klas_id)
-    VALUES (?, ?, ?, ?)
-""", (
-    student["id"],
-    student["name"],
-    "",
-    None
-))
-
-cursor.execute("""
-    INSERT OR IGNORE INTO vak (vak_id, naam)
-    VALUES (?, ?)
-""", (
-    subject["id"],
-    subject["name"]
-))
-
-# Taxonomieniveaus opslaan
-
-taxonomy_ids = {}
-
-for index, level_name in enumerate(entry["taxonomyScale"]):
-    tax_id = get_or_create_taxonomie(cursor, level_name, index)
-    taxonomy_ids[level_name] = tax_id
-
-# Dataset (leerling, vak)
-
-dataset_id = get_or_create_dataset(
-    cursor,
-    student["id"],
-    subject["id"]
-)
-
-# Leerdoelen, kernwoorden, snapshots en scores
-
-for lg in entry["learningGoals"]:
-    leerdoel_id = lg["id"]
-    titel = lg["title"]
-
-    # Leerdoel opslaan
     cursor.execute("""
-        INSERT OR IGNORE INTO leerdoel (leerdoel_id, titel, vak_id)
-        VALUES (?, ?, ?)
+        INSERT OR IGNORE INTO leerling (leerling_id, voornaam, achternaam, klas_id)
+        VALUES (?, ?, ?, ?)
     """, (
-        leerdoel_id,
-        titel,
-        subject["id"]
+        student["id"],
+        student["name"],
+        "",
+        None
     ))
 
-    # Kernwoorden + koppeltabel
-    for kw in lg.get("keywords", []):
-        kw_id = get_or_create_kernwoord(cursor, kw)
+    cursor.execute("""
+        INSERT OR IGNORE INTO vak (vak_id, naam)
+        VALUES (?, ?)
+    """, (
+        subject["id"],
+        subject["name"]
+    ))
+
+    # Taxonomieniveaus opslaan
+    taxonomy_ids = {}
+    for index, level_name in enumerate(entry["taxonomyScale"]):
+        tax_id = get_or_create_taxonomie(cursor, level_name, index)
+        taxonomy_ids[level_name] = tax_id
+
+    # Dataset (leerling, vak)
+    dataset_id = get_or_create_dataset(
+        cursor,
+        student["id"],
+        subject["id"]
+    )
+
+    # Leerdoelen, kernwoorden, snapshots en scores
+    for lg in entry["learningGoals"]:
+        leerdoel_id = lg["id"]
+        titel = lg["title"]
 
         cursor.execute("""
-            INSERT OR IGNORE INTO leerdoel_kernwoord (leerdoel_id, kernwoord_id)
-            VALUES (?, ?)
+            INSERT OR IGNORE INTO leerdoel (leerdoel_id, titel, vak_id)
+            VALUES (?, ?, ?)
         """, (
             leerdoel_id,
-            kw_id
+            titel,
+            subject["id"]
         ))
 
-    # Snapshots en scores
-    for snap in lg.get("snapshots", []):
-        datum = snap["at"]
-        bron = snap["source"]["type"]
-        bron_id = snap["source"]["id"]
-
-        snapshot_id = get_or_create_snapshot(
-            cursor,
-            leerdoel_id,
-            dataset_id,
-            datum,
-            bron,
-            bron_id
-        )
-
-        for t in snap.get("taxonomy", []):
-            tax_id = taxonomy_ids[t["level"]]
-
+        # Kernwoorden + koppeltabel
+        for kw in lg.get("keywords", []):
+            kw_id = get_or_create_kernwoord(cursor, kw)
             cursor.execute("""
-                SELECT 1
-                FROM score
-                WHERE snapshot_id = ?
-                  AND taxonomie_id = ?
+                INSERT OR IGNORE INTO leerdoel_kernwoord (leerdoel_id, kernwoord_id)
+                VALUES (?, ?)
             """, (
-                snapshot_id,
-                tax_id
+                leerdoel_id,
+                kw_id
             ))
 
-            exists = cursor.fetchone()
+        # Snapshots en scores
+        for snap in lg.get("snapshots", []):
+            datum = snap["at"]
+            bron = snap["source"]["type"]
+            bron_id = snap["source"]["id"]
 
-            if not exists:
+            snapshot_id = get_or_create_snapshot(
+                cursor,
+                leerdoel_id,
+                dataset_id,
+                datum,
+                bron,
+                bron_id
+            )
+
+            for t in snap.get("taxonomy", []):
+                tax_id = taxonomy_ids[t["level"]]
+
                 cursor.execute("""
-                    INSERT INTO score
-                    (kennen, kunnen, confidence, taxonomie_id, snapshot_id)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (
-                    t["kennen"],
-                    t["kunnen"],
-                    t["confidence"],
-                    tax_id,
-                    snapshot_id
-                ))
+                    SELECT 1
+                    FROM score
+                    WHERE snapshot_id = ?
+                      AND taxonomie_id = ?
+                """, (snapshot_id, tax_id))
+
+                exists = cursor.fetchone()
+                if not exists:
+                    cursor.execute("""
+                        INSERT INTO score
+                        (kennen, kunnen, confidence, taxonomie_id, snapshot_id)
+                        VALUES (?, ?, ?, ?, ?)
+                    """, (
+                        t["kennen"],
+                        t["kunnen"],
+                        t["confidence"],
+                        tax_id,
+                        snapshot_id
+                    ))
 
 conn.commit()
 conn.close()
