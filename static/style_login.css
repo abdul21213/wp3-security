@@ -1,0 +1,30 @@
+body {
+    background: #f2f6ff;
+    font-family: "Nunito", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.login_box {
+    background: #ffffff;
+    padding: 40px 45px;
+    border-radius: 15px;
+    width: 380px;
+    height: 300px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.login-kladheader span {
+    font-size: 32px;
+    font-weight: 600;
+}
+
