@@ -24,8 +24,26 @@
   <div class="col-md-6">
     <div class="card shadow-sm">
       <div class="card-body">
-        <h2 class="h5 card-title">Status</h2>
-        <p class="card-text text-muted">Cijfers en nieuwe announcements?</p>
+<h2 class="h5 card-title">Voortgang leerdoelen</h2>
+
+{% for l in leerdoelen %}
+  <div class="mb-3">
+    <div class="d-flex justify-content-between">
+      <strong>{{ l.titel }}</strong>
+      <span class="badge bg-{{ l.color }}">
+        {{ l.status }} ({{ l.score }}%)
+      </span>
+    </div>
+
+    <div class="progress mt-2" style="height: 8px;">
+      <div class="progress-bar bg-{{ l.color }}"
+           style="width: {{ l.score }}%;">
+      </div>
+    </div>
+  </div>
+{% else %}
+  <p class="text-muted">Nog geen leerdoelen gevonden.</p>
+{% endfor %}
       </div>
     </div>
   </div>
