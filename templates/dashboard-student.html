@@ -24,6 +24,16 @@
   <div class="col-md-6">
     <div class="card shadow-sm">
       <div class="card-body">
+          <form method="get" action="/dashboard-student" class="mb-3">
+  <label class="form-label">Kies vak</label>
+  <select name="vak_id" class="form-select" onchange="this.form.submit()">
+    {% for v in vakken %}
+      <option value="{{ v.vak_id }}" {% if v.vak_id == gekozen_vak_id %}selected{% endif %}>
+        {{ v.naam }}
+      </option>
+    {% endfor %}
+  </select>
+</form>
 <h2 class="h5 card-title">Voortgang leerdoelen</h2>
 
 {% for l in leerdoelen %}
