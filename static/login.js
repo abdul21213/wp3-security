@@ -6,5 +6,12 @@ event.preventDefault();
 let email = document.getElementById("user").value;
 let password = document.getElementById("pass").value;
 
-console.log(email, password)
+let dummyemail = "student@test.nl"
+let dummypassword = "test123"
+
+if (email === dummyemail && password === dummypassword) {
+    console.log("Login gelukt!");}
+else {
+    console.log("Login mislukt!")}
+
 });
