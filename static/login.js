@@ -9,9 +9,13 @@ let password = document.getElementById("pass").value;
 let dummyemail = "student@test.nl"
 let dummypassword = "test123"
 
+let errordiv = document.getElementById("errormessage");
+
+
 if (email === dummyemail && password === dummypassword) {
+    errordiv.textContent = "";
     console.log("Login gelukt!");}
 else {
-    console.log("Login mislukt!")}
+    errordiv.textContent = "Ongeldige inloggegevens.";}
 
 });
