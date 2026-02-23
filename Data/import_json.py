@@ -77,7 +77,7 @@ with open("data-sample-small.json", "r", encoding="utf-8") as file:
 
 # Database verbinden
 
-conn = sqlite3.connect(r"C:\Users\Karin\Desktop\wp3-2026-rest-1b6-fox\database.db")
+conn = sqlite3.connect(r"database.db")
 cursor = conn.cursor()
 
 for entry in data["entries"]:

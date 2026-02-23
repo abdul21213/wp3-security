@@ -1,10 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>student</h1>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <div class="col-12">
+    <div class="p-4 bg-white border rounded">
+      <h1 class="h3 mb-1">Student dashboard</h1>
+      <p class="text-muted mb-0">Welcome!</p>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Quick action</h2>
+        <p class="card-text text-muted">student-specifieke actie hier.</p>
+        <a href="/" class="btn btn-primary btn-sm">Back to home</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Status</h2>
+        <p class="card-text text-muted">Cijfers en nieuwe announcements?</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

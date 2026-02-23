@@ -1,0 +1,72 @@
+body {
+    background: #f2f6ff;
+    font-family: "Nunito", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.login_box {
+    background: #ffffff;
+    padding: 40px 45px;
+    border-radius: 15px;
+    width: 380px;
+    height: 300px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+}
+
+.login-kladheader span {
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.input_box {
+    position: relative;
+    width: 86%;
+    margin-top: 25px;
+}
+
+.input_field {
+    width: 100%;
+    padding: 12px 25px;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    font-size: 15px;
+    background: transparent;
+    background: #f9faff;
+}
+
+.label {
+    position: relative;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50);
+    color: #041f74;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.input_submit {
+    width: 116%;
+    margin-top: 25px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    background-color: #3dbb56;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.input_submit:hover {
+    background-color: #0a9c27;
+}
