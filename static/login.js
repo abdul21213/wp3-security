@@ -1,25 +1,28 @@
 console.log("Javascript werkt");
 
-document.getElementById("loginbtn").addEventListener("click", function(event) {
-event.preventDefault();
+let studentbtn = document.getElementById("loginbtn");
 
-let email = document.getElementById("user").value;
-let password = document.getElementById("pass").value;
+if (studentbtn) {
+    studentbtn.addEventListener("click", function(event) {
+        event.preventDefault();
 
-let dummyemail = "student@test.nl"
-let dummypassword = "student123"
+        let email = document.getElementById("user").value;
+        let password = document.getElementById("pass").value;
 
-let errordiv = document.getElementById("errormessage");
+        let dummyemail = "student@test.nl"
+        let dummypassword = "student123"
+
+        let errordiv = document.getElementById("errormessage");
 
 
-if (email === dummyemail && password === dummypassword) {
-    errordiv.textContent = "";
-    console.log("Login gelukt!");}
-else {
-    errordiv.textContent = "Ongeldige inloggegevens.";}
-
-});
-
+        if (email === dummyemail && password === dummypassword) {
+            errordiv.textContent = "";
+            console.log("Login gelukt!");
+        } else {
+            errordiv.textContent = "Ongeldige inloggegevens.";
+        }
+    });
+}
 
 let docentbtn = document.getElementById("loginbtn-docent");
 
