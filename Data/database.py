@@ -4,6 +4,30 @@ import sqlite3
 DB_PATH = "Data/database.db"
 
 
+def insert_into_test_table():
+    with open("Data/data-sample-small.json", "r", encoding="utf-8") as file:
+        data = json.load(file)
+    test_set = set()
+
+    for entry in data["entries"]:
+        for goal in entry["learningGoals"]:
+            for snapshot in goal["snapshots"]:
+                source = snapshot["source"]
+                test = (source["id"],source["type"], entry["subject"]["id"])
+                test_set.add(test)
+    
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
+    cur = conn.cursor()
+
+    cur.executemany(
+        "INSERT OR IGNORE INTO test (test_id, type, vak_id) VALUES (?, ?, ?)",
+        test_set
+    )
+
+    conn.commit()
+    conn.close()
+
 
 def create_taxonomy_table():
     con = sqlite3.connect(DB_PATH)
@@ -48,29 +72,22 @@ def create_taxonomy_table():
     con.close()
 
 def create_test_table():
-    con = sqlite3.connect(DB_PATH)
-    con.execute("PRAGMA foreign_keys = ON")
-
-    cur = con.cursor()
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA foreign_keys = ON")
+    cur = conn.cursor()
 
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS test (
-        test_id INTEGER PRIMARY KEY,              
-        subject TEXT NOT NULL,
-        date TEXT,                                
-        type TEXT,
-        kernwoord_id INTEGER NOT NULL,
-        leerling_id INTEGER NOT NULL,
-        taxonomy_id INTEGER,
-
-        FOREIGN KEY (kernwoord_id) REFERENCES kernwoord(kernwoord_id),
-        FOREIGN KEY (leerling_id) REFERENCES leerling(leerling_id),
-        FOREIGN KEY (taxonomy_id) REFERENCES taxonomy(taxonomy_id)
-    )
+        CREATE TABLE IF NOT EXISTS test (
+            test_id TEXT NOT NULL,
+            type TEXT NOT NULL,
+            vak_id INTEGER NOT NULL,
+            PRIMARY KEY (test_id, vak_id),
+            FOREIGN KEY (vak_id) REFERENCES vak(vak_id)
+        )
     """)
 
-    con.commit()
-    con.close()
+    conn.commit()
+    conn.close()
 
 
 
@@ -258,3 +275,4 @@ conn.close()
 
 create_taxonomy_table()
 create_test_table()
+insert_into_test_table()
