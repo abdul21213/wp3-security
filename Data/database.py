@@ -1,6 +1,51 @@
 import json
 import sqlite3
 
+DB_PATH = "Data/database.db"
+
+def create_taxonomy_table():
+    con = sqlite3.connect(DB_PATH)
+    con.execute("PRAGMA foreign_keys = ON")
+
+    cur = con.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS taxonomy (
+        taxonomy_id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE
+    )
+    """)
+
+    con.commit() 
+    con.close()
+
+def create_test_table():
+    con = sqlite3.connect(DB_PATH)
+    con.execute("PRAGMA foreign_keys = ON")
+
+    cur = con.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS test (
+        test_id INTEGER PRIMARY KEY,              
+        subject TEXT NOT NULL,
+        date TEXT,                                
+        type TEXT,
+        kernwoord_id INTEGER NOT NULL,
+        leerling_id INTEGER NOT NULL,
+        taxonomy_id INTEGER,
+
+        FOREIGN KEY (kernwoord_id) REFERENCES kernwoord(kernwoord_id),
+        FOREIGN KEY (leerling_id) REFERENCES leerling(leerling_id),
+        FOREIGN KEY (taxonomy_id) REFERENCES taxonomy(taxonomy_id)
+    )
+    """)
+
+    con.commit()
+    con.close()
+
+
+
 def get_or_create_taxonomie(cursor, naam, volgorde):
     cursor.execute(
         "SELECT taxonomie_id FROM taxonomieniveau WHERE naam = ?",
@@ -71,13 +116,13 @@ def get_or_create_snapshot(cursor, leerdoel_id, dataset_id, datum, bron, bron_id
 
 # JSON lezen
 
-with open("data-sample-small.json", "r", encoding="utf-8") as file:
+with open("Data/data-sample-small.json", "r", encoding="utf-8") as file:
     data = json.load(file)
 
 
 # Database verbinden
 
-conn = sqlite3.connect(r"database.db")
+conn = sqlite3.connect(DB_PATH)
 cursor = conn.cursor()
 
 for entry in data["entries"]:
@@ -182,3 +227,6 @@ for entry in data["entries"]:
 
 conn.commit()
 conn.close()
+
+create_taxonomy_table()
+create_test_table()
