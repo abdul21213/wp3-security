@@ -3,6 +3,8 @@ import sqlite3
 
 DB_PATH = "Data/database.db"
 
+
+
 def create_taxonomy_table():
     con = sqlite3.connect(DB_PATH)
     con.execute("PRAGMA foreign_keys = ON")
@@ -10,11 +12,37 @@ def create_taxonomy_table():
     cur = con.cursor()
 
     cur.execute("""
-    CREATE TABLE IF NOT EXISTS taxonomy (
-        taxonomy_id INTEGER PRIMARY KEY,
-        name TEXT NOT NULL UNIQUE
-    )
-    """)
+                CREATE TABLE IF NOT EXISTS taxonomy (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+                    leerling_id INTEGER NOT NULL,
+                    vak_id INTEGER NOT NULL,
+                    leerdoel_id TEXT NOT NULL,
+
+                    snapshot_at TEXT NOT NULL,
+
+                    test_id TEXT NOT NULL,     
+                    level TEXT NOT NULL,
+
+                    kennen REAL NOT NULL,
+                    kunnen REAL NOT NULL,
+                    confidence REAL NOT NULL,
+
+                    UNIQUE (
+                        leerling_id,
+                        vak_id,
+                        leerdoel_id,
+                        snapshot_at,
+                        test_id,
+                        level
+                    ),
+
+                    FOREIGN KEY (leerling_id) REFERENCES leerling(leerling_id),
+                    FOREIGN KEY (vak_id) REFERENCES vak(vak_id),
+                    FOREIGN KEY (test_id) REFERENCES test(test_id),
+                    FOREIGN KEY (leerdoel_id) REFERENCES leerdoel(leerdoel_id)
+                )
+                """)
 
     con.commit() 
     con.close()
