@@ -3,11 +3,67 @@
 {% block title %}Docent Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row g-3">
   <div class="col-12">
     <div class="p-4 bg-white border rounded">
       <h1 class="h3 mb-1">Docent dashboard</h1>
-      <p class="text-muted mb-0">Base pagina docentfunctionaliteit</p>
+      <p class="text-muted mb-0">Kies een klas om leerlingen te bekijken.</p>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Klas</h2>
+
+        <form method="get" action="/dashboard-docent" class="mb-0">
+          <label class="form-label">Kies klas</label>
+          <select name="klas_id" class="form-select" onchange="this.form.submit()">
+            {% for k in klassen %}
+              <option value="{{ k.klas_id }}" {% if k.klas_id == gekozen_klas_id %}selected{% endif %}>
+                {{ k.naam }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+
+        {% if not klassen %}
+          <p class="text-muted mt-3 mb-0">Nog geen klassen gevonden voor deze docent.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Leerlingen</h2>
+
+        {% if leerlingen %}
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Voornaam</th>
+                  <th>Achternaam</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for l in leerlingen %}
+                  <tr>
+                    <td>{{ l.leerling_id }}</td>
+                    <td>{{ l.voornaam }}</td>
+                    <td>{{ l.achternaam }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">Geen leerlingen gevonden (of nog geen klas gekozen).</p>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
