@@ -1,61 +1,36 @@
+from typing import List
 import sqlite3
-import os
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))          # /Data/queries
-DATA_DIR = os.path.dirname(BASE_DIR)                           # /Data
-DB_PATH = os.path.join(DATA_DIR, "database.db")                # /Data/database.db
-
-DOCENT_VOORNAAM = "Docent"
-DOCENT_ACHTERNAAM = "Dummy"
-DOCENT_EMAIL = "dummy.docent@example.com"  # placeholder
-
-KLAS_NAAM = "1A"
 
 
-def main() -> None:
-    conn = sqlite3.connect(DB_PATH)
-    try:
-        conn.execute("PRAGMA foreign_keys = ON;")
-        cur = conn.cursor()
+def get_klassen(conn: sqlite3.Connection, docent_id: int) -> List[sqlite3.Row]:
+    if conn is None:
+        return []
 
-        cur.execute(
-            """
-            INSERT INTO docent (voornaam, achternaam, email)
-            VALUES (?, ?, ?)
-            """,
-            (DOCENT_VOORNAAM, DOCENT_ACHTERNAAM, DOCENT_EMAIL),
-        )
-        docent_id = cur.lastrowid
-
-        cur.execute(
-            """
-            INSERT INTO klas (naam, docent_id)
-            VALUES (?, ?)
-            """,
-            (KLAS_NAAM, docent_id),
-        )
-        klas_id = cur.lastrowid
-
-        cur.execute(
-            """
-            UPDATE leerling
-            SET klas_id = ?
-            WHERE klas_id IS NULL
-            """,
-            (klas_id,),
-        )
-        updated = cur.rowcount
-
-        conn.commit()
-
-        print(f"DB gebruikt: {DB_PATH}")
-        print(f"Docent aangemaakt: docent_id={docent_id}")
-        print(f"Klas aangemaakt: klas_id={klas_id} ({KLAS_NAAM})")
-        print(f"Leerlingen bijgewerkt (NULL -> {klas_id}): {updated}")
-
-    finally:
-        conn.close()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT klas_id, naam
+        FROM klas
+        WHERE docent_id = ?
+        ORDER BY naam
+        """,
+        (docent_id,),
+    )
+    return cur.fetchall()
 
 
-if __name__ == "__main__":
-    main()
+def get_leerlingen(conn: sqlite3.Connection, klas_id: int) -> List[sqlite3.Row]:
+    if conn is None or klas_id is None:
+        return []
+
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT leerling_id, voornaam, achternaam
+        FROM leerling
+        WHERE klas_id = ?
+        ORDER BY achternaam, voornaam
+        """,
+        (klas_id,),
+    )
+    return cur.fetchall()

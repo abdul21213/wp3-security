@@ -1,28 +1,34 @@
 from flask import Flask, render_template, request
 import sqlite3
 import os
+from Data.queries.docent import get_klassen, get_leerlingen
 
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "Data", "database.db")  # <-- Data map!
 
+
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/login_docent")
 def login_docent():
     return render_template("login_docent.html")
 
+
 @app.route("/login_student")
 def login_student():
     return render_template("login_student.html")
+
 
 @app.route("/dashboard-student")
 def student():
@@ -31,7 +37,6 @@ def student():
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Haal alle vakken op waar deze leerling data voor heeft
     vakken_query = """
     SELECT DISTINCT v.vak_id, v.naam
     FROM dataset d
@@ -42,14 +47,11 @@ def student():
     cur.execute(vakken_query, (leerling_id,))
     vakken = cur.fetchall()
 
-    # Gekozen vak uit de URL (bijv. ?vak_id=2)
     vak_id = request.args.get("vak_id", type=int)
 
-    # Als er nog geen vak gekozen is: kies de eerste uit de lijst
     if vak_id is None and vakken:
         vak_id = vakken[0]["vak_id"]
 
-    # Leerdoelen voor dit vak
     leerdoelen = []
 
     if vak_id is not None:
@@ -105,9 +107,32 @@ def student():
         leerdoelen=leerdoelen
     )
 
+
 @app.route("/dashboard-docent")
 def docent():
-    return render_template("dashboard-docent.html")
+    docent_id = 1  # tijdelijk hardcoded
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    klassen = get_klassen(conn, docent_id)
+
+    klas_id = request.args.get("klas_id", type=int)
+    if klas_id is None and klassen:
+        klas_id = klassen[0]["klas_id"]
+
+    leerlingen = []
+    if klas_id is not None:
+        leerlingen = get_leerlingen(conn, klas_id)
+
+    conn.close()
+
+    return render_template(
+        "dashboard-docent.html",
+        klassen=klassen,
+        gekozen_klas_id=klas_id,
+        leerlingen=leerlingen,
+    )
 
 
 if __name__ == "__main__":
