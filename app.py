@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import sqlite3
 import os
+import Data.database as db
 
 app = Flask(__name__)
 
@@ -115,4 +116,5 @@ def docent():
 
 
 if __name__ == "__main__":
+    db.init_database()
     app.run(debug=True)
