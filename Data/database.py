@@ -11,6 +11,53 @@ def init_database():
     insert_into_test_table()
     create_leerling_table()
     insert_into_leerling_table()
+    insert_into_taxonomy()
+
+def insert_into_taxonomy():
+    with open("Data/data-sample-small.json", "r", encoding="utf-8") as file:
+        data = json.load(file)
+
+    snapshots_set = set()
+
+    for entry in data["entries"]:
+        student_id = entry["student"]["id"]
+        subject_id = entry["subject"]["id"] 
+
+        for learning_goal in entry["learningGoals"]:
+            learning_goal_id = learning_goal["id"]
+            for snapshot in learning_goal["snapshots"]:
+                snapshot_at = snapshot["at"]
+                snapshot_test_id = snapshot["source"]["id"]
+                for score in snapshot["taxonomy"]:
+                    level = score["level"]
+                    kennen = score["kennen"]
+                    kunnen = score["kunnen"]
+                    confidence = score["confidence"]
+                    snapshot_to_insert = (student_id, subject_id, learning_goal_id, snapshot_at, snapshot_test_id, level, kennen, kunnen, confidence)
+                    snapshots_set.add(snapshot_to_insert)
+
+    con = sqlite3.connect(DB_PATH)
+    con.execute("PRAGMA foreign_keys = ON")
+    cur = con.cursor()
+
+    cur.executemany("""
+    INSERT OR REPLACE INTO taxonomy (
+        leerling_id,
+        vak_id,
+        leerdoel_id,
+        snapshot_at,
+        test_id,
+        level,
+        kennen,
+        kunnen,
+        confidence
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """,
+    snapshots_set)
+
+    con.commit()
+    con.close()
 
 def create_leerling_table():
     conn = sqlite3.connect(DB_PATH)
