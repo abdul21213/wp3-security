@@ -108,7 +108,11 @@ def student():
 
 @app.route("/resultaten-student")
 def resultaten_student():
-    return render_template("resultaten-student.html")
+    leerling_id = 1
+    voornaam = db.get_leerling_voornaam_by_id(leerling_id)
+
+
+    return render_template("resultaten-student.html", voornaam = voornaam)
 
 @app.route("/dashboard-docent")
 def docent():

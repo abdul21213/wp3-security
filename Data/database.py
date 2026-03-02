@@ -13,6 +13,20 @@ def init_database():
     insert_into_leerling_table()
     insert_into_taxonomy()
 
+def get_leerling_voornaam_by_id(leerling_id):
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+
+    cur.execute(
+        "SELECT voornaam FROM leerling WHERE leerling_id = ?",
+        (leerling_id,)
+    )
+
+    result = cur.fetchone()
+    conn.close()
+
+    return result[0]
+
 def insert_into_taxonomy():
     with open("Data/data-sample-small.json", "r", encoding="utf-8") as file:
         data = json.load(file)
