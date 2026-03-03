@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import sqlite3
 import os
-from Data.queries.docent import get_klassen, get_leerlingen
+from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht
 
 app = Flask(__name__)
 
@@ -124,6 +124,7 @@ def docent():
     leerlingen = []
     if klas_id is not None:
         leerlingen = get_leerlingen(conn, klas_id)
+        leerdoel_overzicht = get_leerdoel_overzicht(conn, klas_id)
 
     conn.close()
 
@@ -132,6 +133,7 @@ def docent():
         klassen=klassen,
         gekozen_klas_id=klas_id,
         leerlingen=leerlingen,
+        leerdoel_overzicht=leerdoel_overzicht
     )
 
 

@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <div class="col-lg-4">
+  <div class="col-md-6">
     <div class="card shadow-sm">
       <div class="card-body">
         <h2 class="h5 card-title">Klas</h2>
@@ -32,10 +32,8 @@
         {% endif %}
       </div>
     </div>
-  </div>
 
-  <div class="col-lg-8">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mt-3">
       <div class="card-body">
         <h2 class="h5 card-title">Leerlingen</h2>
 
@@ -62,6 +60,37 @@
           </div>
         {% else %}
           <p class="text-muted mb-0">Geen leerlingen gevonden (of nog geen klas gekozen).</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Sterke en zwakke punten </h2>
+
+        {% if leerdoel_overzicht %}
+          <div style="max-height: 400px; overflow-y: auto;">
+            {% for leerdoel in leerdoel_overzicht %}
+              <div class="mb-3">
+                <div class="d-flex justify-content-between">
+                  <strong>{{ leerdoel.titel }}</strong>
+                  <span class="badge bg-{{ leerdoel.color }}">
+                    {{ leerdoel.status }} ({{ leerdoel.score }}%)
+                  </span>
+                </div>
+
+                <div class="progress mt-2" style="height: 8px;">
+                  <div class="progress-bar bg-{{ leerdoel.color }}"
+                       style="width: {{ leerdoel.score }}%;">
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">Nog geen leerdoelen gevonden (of nog geen klas gekozen).</p>
         {% endif %}
       </div>
     </div>
