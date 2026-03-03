@@ -35,7 +35,7 @@ def get_leerlingen(conn: sqlite3.Connection, klas_id: int) -> List[sqlite3.Row]:
     )
     return cur.fetchall()
 
-
+# Sterke/Zwakke punten
 def get_leerdoel_overzicht(conn: sqlite3.Connection, klas_id: int) -> List[dict]:
 
     if conn is None or klas_id is None:
