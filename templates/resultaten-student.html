@@ -1,14 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
+<html lang="nl">
+<head>
     <meta charset="UTF-8">
     <title>Resultaten</title>
-    <link rel="stylesheet" href="static/resultaten-student.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='resultaten-student.css') }}">
 </head>
 <body>
 <div class="resultaten-container">
     <h1>Resultaten</h1>
-    <h2>{{voornaam}}</h2>
+    <h2>{{ voornaam }}</h2>
+
+    {% if resultaten and resultaten|length > 0 %}
+        <table class="resultaten-tabel">
+            <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Test</th>
+                    <th>Leerdoel</th>
+                    <th>Level</th>
+                    <th>Kennen</th>
+                    <th>Kunnen</th>
+                    <th>Confidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in resultaten %}
+                    <tr>
+                        <td>{{ r["snapshot_at"] }}</td>
+                        <td>{{ r["test_id"] }}</td>
+                        <td>{{ r["leerdoel_id"] }}</td>
+                        <td>{{ r["level"] }}</td>
+                        <td>{{ "%.2f"|format(r["kennen"]) }}</td>
+                        <td>{{ "%.2f"|format(r["kunnen"]) }}</td>
+                        <td>{{ "%.2f"|format(r["confidence"]) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Geen resultaten gevonden.</p>
+    {% endif %}
 </div>
 </body>
 </html>

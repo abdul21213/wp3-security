@@ -13,6 +13,29 @@ def init_database():
     insert_into_leerling_table()
     insert_into_taxonomy()
 
+def get_taxonomy_by_leerling(leerling_id):
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row  
+    cur = con.cursor()
+
+    cur.execute("""
+        SELECT
+            snapshot_at,
+            test_id,
+            leerdoel_id,
+            level,
+            kennen,
+            kunnen,
+            confidence
+        FROM taxonomy
+        WHERE leerling_id = ?
+        ORDER BY snapshot_at DESC
+    """, (leerling_id,))
+
+    rows = cur.fetchall()
+    con.close()
+    return rows
+
 def get_leerling_voornaam_by_id(leerling_id):
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()

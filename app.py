@@ -108,11 +108,15 @@ def student():
 
 @app.route("/resultaten-student")
 def resultaten_student():
-    leerling_id = 1
+    leerling_id = 1  
     voornaam = db.get_leerling_voornaam_by_id(leerling_id)
+    resultaten = db.get_taxonomy_by_leerling(leerling_id)
 
-
-    return render_template("resultaten-student.html", voornaam = voornaam)
+    return render_template(
+        "resultaten-student.html",
+        voornaam=voornaam,
+        resultaten=resultaten
+    )
 
 @app.route("/dashboard-docent")
 def docent():
