@@ -2,6 +2,8 @@ from flask import Flask, render_template, request
 import sqlite3
 import os
 import Data.database as db
+from services.progress import LEVELS, score_pct, kleurklasse
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -136,7 +138,38 @@ def resultaten_student_fragment():
         test_type=test_type
     )
 
-    return render_template("resultaten-tabel.html", resultaten=resultaten)
+    per_level = defaultdict(list)
+    for r in resultaten:
+        per_level[r["level"]].append(r)
+
+    level_cards = []
+    for lvl in LEVELS:
+        rows = per_level[lvl]  
+
+        if not rows:
+            level_cards.append({"level": lvl, "has_data": False})
+            continue
+
+        latest_pct = score_pct(rows[0])
+
+        delta = None
+        if len(rows) > 1:
+            delta = latest_pct - score_pct(rows[1])
+
+        level_cards.append({
+            "level": lvl,
+            "has_data": True,
+            "pct": latest_pct,
+            "class": kleurklasse(latest_pct),
+            "date": rows[0]["snapshot_at"],
+            "delta": delta
+        })
+
+    return render_template(
+        "resultaten-tabel.html",
+        resultaten=resultaten,
+        level_cards=level_cards
+    )
 
 @app.route("/dashboard-docent")
 def docent():
