@@ -13,6 +13,65 @@ def init_database():
     insert_into_leerling_table()
     insert_into_taxonomy()
 
+def get_taxonomy_joined_by_filters(leerling_id, vak_id="", level="", leerdoel_id="", test_type=""):
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+
+    sql = """
+        SELECT
+            t.snapshot_at,
+            v.naam              AS vak_naam,
+            te.type             AS test_type,
+            ld.titel            AS leerdoel_titel,
+            t.level,
+            t.kennen,
+            t.kunnen,
+            t.confidence
+        FROM taxonomy t
+        JOIN vak v
+            ON v.vak_id = t.vak_id
+        JOIN leerdoel ld
+            ON ld.leerdoel_id = t.leerdoel_id
+        JOIN test te
+            ON te.test_id = t.test_id
+           AND te.vak_id  = t.vak_id
+        WHERE t.leerling_id = ?
+    """
+    params = [leerling_id]
+
+    if vak_id:
+        sql += " AND t.vak_id = ?"
+        params.append(vak_id)
+
+    if level:
+        sql += " AND t.level = ?"
+        params.append(level)
+
+    if leerdoel_id:
+        sql += " AND t.leerdoel_id = ?"
+        params.append(leerdoel_id)
+
+    if test_type:
+        sql += " AND te.type = ?"
+        params.append(test_type)
+
+    sql += " ORDER BY t.snapshot_at DESC"
+
+    cur.execute(sql, params)
+    rows = cur.fetchall()
+    con.close()
+    return rows
+
+def get_all_vakken():
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute("SELECT vak_id, naam FROM vak ORDER BY naam")
+    rows = cur.fetchall()
+    con.close()
+    return rows
+
 def get_taxonomy_by_leerling(leerling_id):
     con = sqlite3.connect(DB_PATH)
     con.row_factory = sqlite3.Row  

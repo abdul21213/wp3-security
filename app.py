@@ -108,15 +108,35 @@ def student():
 
 @app.route("/resultaten-student")
 def resultaten_student():
-    leerling_id = 1  
+    leerling_id = 1
     voornaam = db.get_leerling_voornaam_by_id(leerling_id)
-    resultaten = db.get_taxonomy_by_leerling(leerling_id)
+
+    vakken = db.get_all_vakken()  
 
     return render_template(
         "resultaten-student.html",
         voornaam=voornaam,
-        resultaten=resultaten
+        vakken=vakken
     )
+
+@app.route("/resultaten-student/fragment")
+def resultaten_student_fragment():
+    leerling_id = 1
+
+    vak_id = request.args.get("vak_id", "")
+    level = request.args.get("level", "")
+    leerdoel_id = request.args.get("leerdoel", "")
+    test_type = request.args.get("test_type", "")
+
+    resultaten = db.get_taxonomy_joined_by_filters(
+        leerling_id=leerling_id,
+        vak_id=vak_id,
+        level=level,
+        leerdoel_id=leerdoel_id,
+        test_type=test_type
+    )
+
+    return render_template("resultaten-tabel.html", resultaten=resultaten)
 
 @app.route("/dashboard-docent")
 def docent():

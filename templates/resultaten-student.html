@@ -10,36 +10,78 @@
     <h1>Resultaten</h1>
     <h2>{{ voornaam }}</h2>
 
-    {% if resultaten and resultaten|length > 0 %}
-        <table class="resultaten-tabel">
-            <thead>
-                <tr>
-                    <th>Datum</th>
-                    <th>Test</th>
-                    <th>Leerdoel</th>
-                    <th>Level</th>
-                    <th>Kennen</th>
-                    <th>Kunnen</th>
-                    <th>Confidence</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for r in resultaten %}
-                    <tr>
-                        <td>{{ r["snapshot_at"] }}</td>
-                        <td>{{ r["test_id"] }}</td>
-                        <td>{{ r["leerdoel_id"] }}</td>
-                        <td>{{ r["level"] }}</td>
-                        <td>{{ "%.2f"|format(r["kennen"]) }}</td>
-                        <td>{{ "%.2f"|format(r["kunnen"]) }}</td>
-                        <td>{{ "%.2f"|format(r["confidence"]) }}</td>
-                    </tr>
+    <div class="filters">
+        <label>Vak:
+            <select id="vak_id">
+                <option value="">Alles</option>
+                {% for v in vakken %}
+                    <option value="{{ v['vak_id'] }}">{{ v['naam'] }}</option>
                 {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>Geen resultaten gevonden.</p>
-    {% endif %}
+            </select>
+        </label>
+
+        <label>Level:
+            <select id="level">
+                <option value="">Alles</option>
+                <option value="Onthouden">Onthouden</option>
+                <option value="Begrijpen">Begrijpen</option>
+                <option value="Toepassen">Toepassen</option>
+                <option value="Analyseren">Analyseren</option>
+            </select>
+        </label>
+
+        <label>Leerdoel ID:
+            <input id="leerdoel" placeholder="bv. LG-W-2">
+        </label>
+
+        <label>Test type:
+            <input id="test_type" placeholder="bv. quiz / toets">
+        </label>
+
+        <button type = "button" id="zoekBtn">Toon resultaten</button>
+        <button type = "button" id="resetBtn">Reset</button>
+    </div>
+
+    <div id="resultaten-placeholder">
+  <p>Kies filters en klik op “Toon resultaten”.</p>
+    </div>
 </div>
+
+<script>
+function laadResultaten()  {
+    const vakId = document.getElementById("vak_id").value;
+    const level = document.getElementById("level").value;
+    const leerdoel = document.getElementById("leerdoel").value.trim();
+    const testType = document.getElementById("test_type").value.trim();
+
+    const params = new URLSearchParams();
+    if (vakId) params.append("vak_id", vakId);
+    if (level) params.append("level", level);
+    if (leerdoel) params.append("leerdoel", leerdoel);
+    if (testType) params.append("test_type", testType);
+
+    console.log("vakId=", vakId, "level=", level, "leerdoel=", leerdoel, "testType=", testType);
+    console.log("params=", params.toString());
+
+    fetch("/resultaten-student/fragment?" + params.toString())
+        .then(r => r.text())     
+        .then(html => {
+            document.getElementById("resultaten-placeholder").innerHTML = html;
+        })
+        .catch(() => {
+            document.getElementById("resultaten-placeholder").innerHTML = "<p>Fout bij laden.</p>";
+        });
+}
+
+document.getElementById("zoekBtn").addEventListener("click", laadResultaten);
+document.getElementById("resetBtn").addEventListener("click", () => {
+    document.getElementById("vak_id").value = "";
+    document.getElementById("level").value = "";
+    document.getElementById("leerdoel").value = "";
+    document.getElementById("test_type").value = "";
+    laadResultaten();
+});
+
+</script>
 </body>
 </html>

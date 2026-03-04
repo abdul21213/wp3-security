@@ -1,20 +1,19 @@
 body {
-    background: #f2f6ff;
-    font-family: "Nunito", sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
+  background: #f2f6ff;
+  font-family: "Nunito", sans-serif;
+  margin: 0;
+  padding: 24px;
+  display: block;
+  height: auto;
 }
 
 .resultaten-container {
-    background: #ffffff;
-    padding: 40px 45px;
-    border-radius: 15px;
-    width: 700px;
-    min-height: 400px;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .resultaten-container h1 {
@@ -25,24 +24,23 @@ body {
 }
 
 
-.resultaten-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+.resultaten-tabel {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.resultaten-table th {
-    background-color: #004df5;
-    color: white;
-    padding: 12px;
-    border-radius: 6px;
-    text-align: left;
+.resultaten-tabel th,
+.resultaten-tabel td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  vertical-align: top;
 }
 
-.resultaten-table td {
-    background: #f9faff;
-    padding: 12px;
-    border-bottom: 1px solid #E2E8F0;
+.resultaten-tabel thead th {
+  position: sticky;
+  top: 0;
+  background: white;
 }
 
 .action-button {
@@ -59,4 +57,8 @@ body {
 
 .action-button:hover {
     background-color: #0a9c27;
+}
+
+#resultaten-placeholder {
+  overflow-x: auto;
 }
