@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import sqlite3
 import os
 from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
+from Data.queries.student import get_vakken, get_leerdoelen
 
 app = Flask(__name__)
 
@@ -35,51 +36,17 @@ def student():
     leerling_id = 1  # tijdelijk hardcoded
 
     conn = get_db_connection()
-    cur = conn.cursor()
 
-    vakken_query = """
-    SELECT DISTINCT v.vak_id, v.naam
-    FROM dataset d
-    JOIN vak v ON v.vak_id = d.vak_id
-    WHERE d.leerling_id = ?
-    ORDER BY v.naam
-    """
-    cur.execute(vakken_query, (leerling_id,))
-    vakken = cur.fetchall()
+    vakken = get_vakken(conn, leerling_id)
 
     vak_id = request.args.get("vak_id", type=int)
-
     if vak_id is None and vakken:
         vak_id = vakken[0]["vak_id"]
 
     leerdoelen = []
 
     if vak_id is not None:
-        query = """
-        SELECT l.leerdoel_id,
-               l.titel,
-               AVG((sc.kennen + sc.kunnen) / 2.0) AS gemiddelde
-        FROM leerdoel l
-        JOIN snapshot sn ON sn.leerdoel_id = l.leerdoel_id
-        JOIN dataset d ON sn.dataset_id = d.dataset_id
-        JOIN score sc ON sc.snapshot_id = sn.snapshot_id
-        WHERE d.leerling_id = ?
-          AND d.vak_id = ?
-          AND sn.snapshot_id = (
-              SELECT sn2.snapshot_id
-              FROM snapshot sn2
-              JOIN dataset d2 ON sn2.dataset_id = d2.dataset_id
-              WHERE sn2.leerdoel_id = l.leerdoel_id
-                AND d2.leerling_id = ?
-                AND d2.vak_id = ?
-              ORDER BY sn2.datum DESC
-              LIMIT 1
-          )
-        GROUP BY l.leerdoel_id
-        """
-
-        cur.execute(query, (leerling_id, vak_id, leerling_id, vak_id))
-        resultaten = cur.fetchall()
+        resultaten = get_leerdoelen(conn, leerling_id, vak_id)
 
         for r in resultaten:
             score = r["gemiddelde"] or 0
