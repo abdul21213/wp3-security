@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, url_for
 import sqlite3
 import os
 
@@ -27,6 +27,10 @@ def login_student():
 
 @app.route("/dashboard-student")
 def student():
+
+    if session.get("role") != "student":
+        return redirect(url_for("login_student"))
+
     leerling_id = 1  # tijdelijk hardcoded
 
     conn = get_db_connection()
