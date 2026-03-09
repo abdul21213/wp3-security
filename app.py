@@ -112,6 +112,10 @@ def student():
 
 @app.route("/dashboard-docent")
 def docent():
+
+    if session.get("role") != "docent":
+        return redirect(url_for("login_docent"))
+
     return render_template("dashboard-docent.html")
 
 
