@@ -4,83 +4,52 @@ import os
 import Data.database as db
 from services.progress import LEVELS, score_pct, kleurklasse
 from collections import defaultdict
+from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
+from Data.queries.student import get_vakken, get_leerdoelen
 
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "Data", "database.db")  # <-- Data map!
 
+
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/login_docent")
 def login_docent():
     return render_template("login_docent.html")
 
+
 @app.route("/login_student")
 def login_student():
     return render_template("login_student.html")
+
 
 @app.route("/dashboard-student")
 def student():
     leerling_id = 1  # tijdelijk hardcoded
 
     conn = get_db_connection()
-    cur = conn.cursor()
 
-    # Haal alle vakken op waar deze leerling data voor heeft
-    vakken_query = """
-    SELECT DISTINCT v.vak_id, v.naam
-    FROM dataset d
-    JOIN vak v ON v.vak_id = d.vak_id
-    WHERE d.leerling_id = ?
-    ORDER BY v.naam
-    """
-    cur.execute(vakken_query, (leerling_id,))
-    vakken = cur.fetchall()
+    vakken = get_vakken(conn, leerling_id)
 
-    # Gekozen vak uit de URL (bijv. ?vak_id=2)
     vak_id = request.args.get("vak_id", type=int)
-
-    # Als er nog geen vak gekozen is: kies de eerste uit de lijst
     if vak_id is None and vakken:
         vak_id = vakken[0]["vak_id"]
 
-    # Leerdoelen voor dit vak
     leerdoelen = []
 
     if vak_id is not None:
-        query = """
-        SELECT l.leerdoel_id,
-               l.titel,
-               AVG((sc.kennen + sc.kunnen) / 2.0) AS gemiddelde
-        FROM leerdoel l
-        JOIN snapshot sn ON sn.leerdoel_id = l.leerdoel_id
-        JOIN dataset d ON sn.dataset_id = d.dataset_id
-        JOIN score sc ON sc.snapshot_id = sn.snapshot_id
-        WHERE d.leerling_id = ?
-          AND d.vak_id = ?
-          AND sn.snapshot_id = (
-              SELECT sn2.snapshot_id
-              FROM snapshot sn2
-              JOIN dataset d2 ON sn2.dataset_id = d2.dataset_id
-              WHERE sn2.leerdoel_id = l.leerdoel_id
-                AND d2.leerling_id = ?
-                AND d2.vak_id = ?
-              ORDER BY sn2.datum DESC
-              LIMIT 1
-          )
-        GROUP BY l.leerdoel_id
-        """
-
-        cur.execute(query, (leerling_id, vak_id, leerling_id, vak_id))
-        resultaten = cur.fetchall()
+        resultaten = get_leerdoelen(conn, leerling_id, vak_id)
 
         for r in resultaten:
             score = r["gemiddelde"] or 0
@@ -178,7 +147,41 @@ def resultaten_student_fragment():
 
 @app.route("/dashboard-docent")
 def docent():
-    return render_template("dashboard-docent.html")
+    docent_id = 1  # tijdelijk hardcoded
+
+    conn = get_db_connection()
+
+    klassen = get_klassen(conn, docent_id)
+
+    klas_id = request.args.get("klas_id", type=int)
+    leerling_id = request.args.get("leerling_id", type=int)  # NIEUW
+    
+    if klas_id is None and klassen:
+        klas_id = klassen[0]["klas_id"]
+
+    leerlingen = []
+    leerdoel_overzicht = []
+    geselecteerde_leerling = None  # NIEUW
+    
+    if klas_id is not None:
+        leerlingen = get_leerlingen(conn, klas_id)
+        
+        if leerling_id is not None:
+            leerdoel_overzicht = get_leerling_leerdoel_overzicht(conn, leerling_id)
+            geselecteerde_leerling = next((l for l in leerlingen if l["leerling_id"] == leerling_id), None)
+        else:
+            leerdoel_overzicht = get_leerdoel_overzicht(conn, klas_id)
+
+    conn.close()
+
+    return render_template(
+        "dashboard-docent.html",
+        klassen=klassen,
+        gekozen_klas_id=klas_id,
+        leerlingen=leerlingen,
+        leerdoel_overzicht=leerdoel_overzicht,
+        geselecteerde_leerling=geselecteerde_leerling  # NIEUW
+    )
 
 
 if __name__ == "__main__":

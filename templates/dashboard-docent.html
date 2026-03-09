@@ -3,11 +3,117 @@
 {% block title %}Docent Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row g-3">
   <div class="col-12">
     <div class="p-4 bg-white border rounded">
       <h1 class="h3 mb-1">Docent dashboard</h1>
-      <p class="text-muted mb-0">Base pagina docentfunctionaliteit</p>
+      <p class="text-muted mb-0">Kies een klas om leerlingen te bekijken.</p>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 card-title">Klas</h2>
+
+        <form method="get" action="/dashboard-docent" class="mb-0">
+          <label class="form-label">Kies klas</label>
+          <select name="klas_id" class="form-select" onchange="this.form.submit()">
+            {% for k in klassen %}
+              <option value="{{ k.klas_id }}" {% if k.klas_id == gekozen_klas_id %}selected{% endif %}>
+                {{ k.naam }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+
+        {% if not klassen %}
+          <p class="text-muted mt-3 mb-0">Nog geen klassen gevonden voor deze docent.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card shadow-sm mt-3">
+      <div class="card-body">
+        <h2 class="h5 card-title">Leerlingen</h2>
+
+        {% if leerlingen %}
+          <div style="max-height: 300px; overflow-y: auto;">
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Voornaam</th>
+                    <th>Achternaam</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for l in leerlingen %}
+                    <tr style="cursor: pointer;" onclick="window.location.href='/dashboard-docent?klas_id={{ gekozen_klas_id }}&leerling_id={{ l.leerling_id }}';"
+                        class="{% if geselecteerde_leerling and geselecteerde_leerling.leerling_id == l.leerling_id %}table-active{% endif %}">
+                      <td>{{ l.leerling_id }}</td>
+                      <td>{{ l.voornaam }}</td>
+                      <td>{{ l.achternaam }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">Geen leerlingen gevonden (of nog geen klas gekozen).</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="h5 card-title mb-0">
+            {% if geselecteerde_leerling %}
+              Resultaten: {{ geselecteerde_leerling.voornaam }} {{ geselecteerde_leerling.achternaam }}
+            {% else %}
+              Sterke en zwakke punten van de klas
+            {% endif %}
+          </h2>
+          {% if geselecteerde_leerling %}
+            <a href="/dashboard-docent?klas_id={{ gekozen_klas_id }}" class="btn btn-sm btn-outline-secondary">
+              ← Terug
+            </a>
+          {% endif %}
+        </div>
+
+        {% if leerdoel_overzicht %}
+          <div style="max-height: 400px; overflow-y: auto;">
+            {% for leerdoel in leerdoel_overzicht %}
+              <div class="mb-3">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <strong>{{ leerdoel.titel }}</strong>
+                    {% if geselecteerde_leerling %}
+                      <br><small class="text-muted">{{ leerdoel.vak_naam }}</small>
+                    {% endif %}
+                  </div>
+                  <span class="badge bg-{{ leerdoel.color }}">
+                    {{ leerdoel.status }} ({{ leerdoel.score }}%)
+                  </span>
+                </div>
+
+                <div class="progress mt-2" style="height: 8px;">
+                  <div class="progress-bar bg-{{ leerdoel.color }}"
+                       style="width: {{ leerdoel.score }}%;">
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">Nog geen leerdoelen gevonden.</p>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
