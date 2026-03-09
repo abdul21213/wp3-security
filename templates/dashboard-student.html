@@ -24,43 +24,77 @@
   <div class="col-md-6">
     <div class="card shadow-sm">
       <div class="card-body">
-          <form method="get" action="/dashboard-student" class="mb-3">
-  <label class="form-label">Kies vak</label>
-  <select name="vak_id" class="form-select" onchange="this.form.submit()">
-    {% for v in vakken %}
-      <option value="{{ v.vak_id }}" {% if v.vak_id == gekozen_vak_id %}selected{% endif %}>
-        {{ v.naam }}
-      </option>
-    {% endfor %}
-  </select>
-</form>
-<h2 class="h5 card-title">Voortgang leerdoelen</h2>
+        <form method="get" action="/dashboard-student" class="mb-3">
+          <label class="form-label">Kies vak</label>
+          <select name="vak_id" class="form-select" onchange="this.form.submit()">
+            {% for v in vakken %}
+              <option value="{{ v.vak_id }}" {% if v.vak_id == gekozen_vak_id %}selected{% endif %}>
+                {{ v.naam }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
 
-{% for l in leerdoelen %}
-  <div class="mb-3">
-    <div class="d-flex justify-content-between">
-      <strong>{{ l.titel }}</strong>
-      <span class="badge bg-{{ l.color }}">
-        {{ l.status }} ({{ l.score }}%)
-      </span>
-    </div>
+        <h2 class="h5 card-title">Voortgang leerdoelen</h2>
 
-    <div class="progress mt-2" style="height: 8px;">
-      <div class="progress-bar bg-{{ l.color }}"
-           style="width: {{ l.score }}%;">
-      </div>
-    </div>
-  </div>
-{% else %}
-  <p class="text-muted">Nog geen leerdoelen gevonden.</p>
-{% endfor %}
+        {% for l in leerdoelen %}
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <strong>{{ l.titel }}</strong>
+              <span class="badge bg-{{ l.color }}">
+                {{ l.status }} ({{ l.score }}%)
+              </span>
+            </div>
 
-<hr>
+            <div class="progress mt-2" style="height: 8px;">
+              <div class="progress-bar bg-{{ l.color }}" style="width: {{ l.score }}%;"></div>
+            </div>
+          </div>
+        {% else %}
+          <p class="text-muted">Nog geen leerdoelen gevonden.</p>
+        {% endfor %}
 
-<h2 class="h5 card-title">Mijn voortgang over tijd</h2>
-<canvas id="progressChart"></canvas>
+        <hr>
+
+        <h2 class="h5 card-title">Mijn voortgang over tijd</h2>
+        <canvas id="progressChart"></canvas>
+
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+fetch("/api/progress?vak_id={{ gekozen_vak_id }}")
+  .then(res => res.json())
+  .then(data => {
+    const ctx = document.getElementById('progressChart');
+
+    if(ctx){
+      new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: data.map(d => d.date),
+              datasets: [{
+                  label: 'Mijn score',
+                  data: data.map(d => d.score),
+                  borderWidth: 2,
+                  borderColor: 'rgb(75, 192, 192)',
+                  tension: 0.3
+              }]
+          },
+          options: {
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                      max: 100
+                  }
+              }
+          }
+      });
+    }
+  });
+</script>
 {% endblock %}
