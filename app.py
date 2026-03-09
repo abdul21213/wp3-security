@@ -146,11 +146,13 @@ def resultaten_student_fragment():
         per_level[r["level"]].append(r)
 
     level_cards = []
-    for lvl in LEVELS:
-        rows = per_level[lvl]  
+
+    levels_to_show = [level] if level else LEVELS
+
+    for lvl in levels_to_show:
+        rows = per_level[lvl]
 
         if not rows:
-            level_cards.append({"level": lvl, "has_data": False})
             continue
 
         latest_pct = score_pct(rows[0])
