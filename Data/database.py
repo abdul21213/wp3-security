@@ -13,6 +13,15 @@ def init_database():
     insert_into_leerling_table()
     insert_into_taxonomy()
 
+def get_all_leerdoelen():
+    con = sqlite3.connect(DB_PATH)
+    con.row_factory = sqlite3.Row
+    cur = con.cursor()
+    cur.execute("SELECT leerdoel_id, titel FROM leerdoel ORDER BY leerdoel_id")
+    rows = cur.fetchall()
+    con.close()
+    return rows
+
 def get_taxonomy_joined_by_filters(leerling_id, vak_id="", level="", leerdoel_id="", test_type=""):
     con = sqlite3.connect(DB_PATH)
     con.row_factory = sqlite3.Row

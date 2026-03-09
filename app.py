@@ -115,10 +115,13 @@ def resultaten_student():
 
     vakken = db.get_all_vakken()  
 
+    leerdoelen = db.get_all_leerdoelen()
+
     return render_template(
         "resultaten-student.html",
         voornaam=voornaam,
-        vakken=vakken
+        vakken=vakken,
+        leerdoelen=leerdoelen
     )
 
 @app.route("/resultaten-student/fragment")

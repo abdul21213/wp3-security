@@ -30,8 +30,15 @@
             </select>
         </label>
 
-        <label>Leerdoel ID:
-            <input id="leerdoel" placeholder="bv. LG-W-2">
+        <label>Leerdoel:
+            <select id="leerdoel">
+                <option value="">Alles</option>
+                {% for ld in leerdoelen %}
+                <option value="{{ ld['leerdoel_id'] }}">
+                    {{ ld['leerdoel_id'] }} — {{ ld['titel'] }}
+                </option>
+                {% endfor %}
+            </select>
         </label>
 
         <label>Test type:
@@ -44,50 +51,54 @@
             </select>
         </label>
 
-        <button type = "button" id="zoekBtn">Toon resultaten</button>
         <button type = "button" id="resetBtn">Reset</button>
     </div>
 
     <div id="resultaten-placeholder">
-  <p>Kies filters en klik op “Toon resultaten”.</p>
+  <p>Kies filters om resultaten te zien.</p>
     </div>
 </div>
 
 <script>
-function laadResultaten()  {
-    const vakId = document.getElementById("vak_id").value;
-    const level = document.getElementById("level").value;
-    const leerdoel = document.getElementById("leerdoel").value.trim();
-    const testType = document.getElementById("test_type").value.trim();
+function laadResultaten() {
+  const vakId = document.getElementById("vak_id").value;
+  const level = document.getElementById("level").value;
+  const leerdoel = document.getElementById("leerdoel").value;   
+  const testType = document.getElementById("test_type").value;  
 
-    const params = new URLSearchParams();
-    if (vakId) params.append("vak_id", vakId);
-    if (level) params.append("level", level);
-    if (leerdoel) params.append("leerdoel", leerdoel);
-    if (testType) params.append("test_type", testType);
+  const params = new URLSearchParams();
+  if (vakId) params.append("vak_id", vakId);
+  if (level) params.append("level", level);
+  if (leerdoel) params.append("leerdoel", leerdoel);
+  if (testType) params.append("test_type", testType);
 
-    console.log("vakId=", vakId, "level=", level, "leerdoel=", leerdoel, "testType=", testType);
-    console.log("params=", params.toString());
+  document.getElementById("resultaten-placeholder").innerHTML = "<p>Resultaten laden...</p>";
 
-    fetch("/resultaten-student/fragment?" + params.toString())
-        .then(r => r.text())     
-        .then(html => {
-            document.getElementById("resultaten-placeholder").innerHTML = html;
-        })
-        .catch(() => {
-            document.getElementById("resultaten-placeholder").innerHTML = "<p>Fout bij laden.</p>";
-        });
+  fetch("/resultaten-student/fragment?" + params.toString())
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById("resultaten-placeholder").innerHTML = html;
+    })
+    .catch(() => {
+      document.getElementById("resultaten-placeholder").innerHTML = "<p>Fout bij laden.</p>";
+    });
 }
 
-document.getElementById("zoekBtn").addEventListener("click", laadResultaten);
-document.getElementById("resetBtn").addEventListener("click", () => {
-    document.getElementById("vak_id").value = "";
-    document.getElementById("level").value = "";
-    document.getElementById("leerdoel").value = "";
-    document.getElementById("test_type").value = "";
-    laadResultaten();
+
+["vak_id", "level", "leerdoel", "test_type"].forEach(id => {
+  document.getElementById(id).addEventListener("change", laadResultaten);
 });
 
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  document.getElementById("vak_id").value = "";
+  document.getElementById("level").value = "";
+  document.getElementById("leerdoel").value = "";
+  document.getElementById("test_type").value = "";
+
+  document.getElementById("resultaten-placeholder").innerHTML =
+    "<p>Kies filters om resultaten te zien.</p>";
+});
 </script>
 </body>
 </html>
