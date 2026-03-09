@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultaten</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='resultaten-student.css') }}">
+</head>
+<body>
+<div class="resultaten-container">
+    <h1>Resultaten</h1>
+    <h2>{{ voornaam }}</h2>
+
+    <div class="filters">
+        <label>Vak:
+            <select id="vak_id">
+                <option value="">Alles</option>
+                {% for v in vakken %}
+                    <option value="{{ v['vak_id'] }}">{{ v['naam'] }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Level:
+            <select id="level">
+                <option value="">Alles</option>
+                <option value="Onthouden">Onthouden</option>
+                <option value="Begrijpen">Begrijpen</option>
+                <option value="Toepassen">Toepassen</option>
+                <option value="Analyseren">Analyseren</option>
+            </select>
+        </label>
+
+        <label>Leerdoel:
+            <select id="leerdoel">
+                <option value="">Alles</option>
+                {% for ld in leerdoelen %}
+                <option value="{{ ld['leerdoel_id'] }}">
+                    {{ ld['leerdoel_id'] }} — {{ ld['titel'] }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label>Test type:
+            <select id="test_type">
+                <option value="">Alles</option>
+                <option value="test">test</option>
+                <option value="observatie">observatie</option>
+                <option value="project">project</option>
+                <option value="quiz">quiz</option>
+            </select>
+        </label>
+
+        <button type = "button" id="resetBtn">Reset</button>
+    </div>
+
+    <div id="resultaten-placeholder">
+  <p>Kies filters om resultaten te zien.</p>
+    </div>
+</div>
+
+<script>
+function laadResultaten() {
+  const vakId = document.getElementById("vak_id").value;
+  const level = document.getElementById("level").value;
+  const leerdoel = document.getElementById("leerdoel").value;   
+  const testType = document.getElementById("test_type").value;  
+
+  const params = new URLSearchParams();
+  if (vakId) params.append("vak_id", vakId);
+  if (level) params.append("level", level);
+  if (leerdoel) params.append("leerdoel", leerdoel);
+  if (testType) params.append("test_type", testType);
+
+  document.getElementById("resultaten-placeholder").innerHTML = "<p>Resultaten laden...</p>";
+
+  fetch("/resultaten-student/fragment?" + params.toString())
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById("resultaten-placeholder").innerHTML = html;
+    })
+    .catch(() => {
+      document.getElementById("resultaten-placeholder").innerHTML = "<p>Fout bij laden.</p>";
+    });
+}
+
+
+["vak_id", "level", "leerdoel", "test_type"].forEach(id => {
+  document.getElementById(id).addEventListener("change", laadResultaten);
+});
+
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  document.getElementById("vak_id").value = "";
+  document.getElementById("level").value = "";
+  document.getElementById("leerdoel").value = "";
+  document.getElementById("test_type").value = "";
+
+    laadResultaten();
+});
+
+laadResultaten();
+</script>
+</body>
+</html>

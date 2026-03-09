@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request
 import sqlite3
 import os
+import Data.database as db
+from services.progress import LEVELS, score_pct, kleurklasse
+from collections import defaultdict
 from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
 from Data.queries.student import get_vakken, get_leerdoelen
 
@@ -74,6 +77,73 @@ def student():
         leerdoelen=leerdoelen
     )
 
+@app.route("/resultaten-student")
+def resultaten_student():
+    leerling_id = 1
+    voornaam = db.get_leerling_voornaam_by_id(leerling_id)
+
+    vakken = db.get_all_vakken()  
+
+    leerdoelen = db.get_all_leerdoelen()
+
+    return render_template(
+        "resultaten-student.html",
+        voornaam=voornaam,
+        vakken=vakken,
+        leerdoelen=leerdoelen
+    )
+
+@app.route("/resultaten-student/fragment")
+def resultaten_student_fragment():
+    leerling_id = 1
+
+    vak_id = request.args.get("vak_id", "")
+    level = request.args.get("level", "")
+    leerdoel_id = request.args.get("leerdoel", "")
+    test_type = request.args.get("test_type", "")
+
+    resultaten = db.get_taxonomy_joined_by_filters(
+        leerling_id=leerling_id,
+        vak_id=vak_id,
+        level=level,
+        leerdoel_id=leerdoel_id,
+        test_type=test_type
+    )
+
+    per_level = defaultdict(list)
+    for r in resultaten:
+        per_level[r["level"]].append(r)
+
+    level_cards = []
+
+    levels_to_show = [level] if level else LEVELS
+
+    for lvl in levels_to_show:
+        rows = per_level[lvl]
+
+        if not rows:
+            continue
+
+        latest_pct = score_pct(rows[0])
+
+        delta = None
+        if len(rows) > 1:
+            delta = latest_pct - score_pct(rows[1])
+
+        level_cards.append({
+            "level": lvl,
+            "has_data": True,
+            "pct": latest_pct,
+            "class": kleurklasse(latest_pct),
+            "date": rows[0]["snapshot_at"],
+            "delta": delta
+        })
+
+    return render_template(
+        "resultaten-tabel.html",
+        resultaten=resultaten,
+        level_cards=level_cards
+    )
 
 @app.route("/dashboard-docent")
 def docent():
@@ -115,4 +185,5 @@ def docent():
 
 
 if __name__ == "__main__":
+    db.init_database()
     app.run(debug=True)
