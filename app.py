@@ -118,6 +118,17 @@ def docent():
 
     return render_template("dashboard-docent.html")
 
+@app.route("/set-role/<role>")
+def set_role(role):
+    session["role"] = role
+
+    if role == "student":
+        return redirect(url_for("student"))
+
+    if role == "docent":
+        return redirect(url_for("docent"))
+
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run(debug=True)
