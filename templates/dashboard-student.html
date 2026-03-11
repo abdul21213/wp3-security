@@ -96,13 +96,23 @@
 fetch("/api/progress?vak_id={{ gekozen_vak_id }}")
   .then(res => res.json())
   .then(data => {
-    const ctx = document.getElementById('progressChart');
+    const ctx = document.getElementById('progressChart').getContext('2d');
 
     if(ctx){
+      // Labels eerst apart declareren
+      const labels = data.map(d => {
+        const dt = new Date(d.date);
+        const day = String(dt.getDate()).padStart(2, '0');
+        const month = String(dt.getMonth() + 1).padStart(2, '0');
+        const year = dt.getFullYear();
+        return `${day}/${month}/${year}`;
+      });
+
+      // Chart maken
       new Chart(ctx, {
           type: 'line',
           data: {
-              labels: data.map(d => d.date),
+              labels: labels,
               datasets: [{
                   label: 'Mijn score',
                   data: data.map(d => d.score),
