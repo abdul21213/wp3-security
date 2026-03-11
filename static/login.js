@@ -17,7 +17,7 @@ if (studentbtn) {
 
         if (email === dummyemail && password === dummypassword) {
             errordiv.textContent = "";
-            console.log("Login gelukt!");
+            window.location.href = "/set-role/student";
         } else {
             errordiv.textContent = "Ongeldige inloggegevens.";
         }
@@ -40,7 +40,7 @@ if (docentbtn) {
 
         if (email === dummyemail && password === dummypassword) {
             errordiv.textContent = "";
-            console.log("Login gelukt!")
+            window.location.href = "/set-role/docent";
         } else {
             errordiv.textContent = "Ongeldige inloggegevens!";
         }

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, url_for
 import sqlite3
 import os
 import Data.database as db
@@ -10,6 +10,7 @@ from flask import jsonify
 from Data.queries.student import get_student_progress
 
 app = Flask(__name__)
+app.secret_key = "geheimesleutel"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "Data", "database.db")  # <-- Data map!
@@ -38,6 +39,10 @@ def login_student():
 
 @app.route("/dashboard-student")
 def student():
+
+    if session.get("role") != "student":
+        return redirect(url_for("login_student"))
+
     leerling_id = 1  # tijdelijk hardcoded
 
     conn = get_db_connection()
@@ -149,6 +154,11 @@ def resultaten_student_fragment():
 
 @app.route("/dashboard-docent")
 def docent():
+
+    if session.get("role") != "docent":
+        return redirect(url_for("login_docent"))
+
+    return render_template("dashboard-docent.html")
     docent_id = 1  # tijdelijk hardcoded
 
     conn = get_db_connection()
@@ -185,6 +195,17 @@ def docent():
         geselecteerde_leerling=geselecteerde_leerling  # NIEUW
     )
 
+@app.route("/set-role/<role>")
+def set_role(role):
+    session["role"] = role
+
+    if role == "student":
+        return redirect(url_for("student"))
+
+    if role == "docent":
+        return redirect(url_for("docent"))
+
+    return redirect(url_for("index"))
 @app.route("/api/progress")
 def api_progress():
     leerling_id = 1  # tijdelijk hardcoded, net als in dashboard-student
