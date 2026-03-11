@@ -6,6 +6,8 @@ from services.progress import LEVELS, score_pct, kleurklasse
 from collections import defaultdict
 from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
 from Data.queries.student import get_vakken, get_leerdoelen
+from flask import jsonify
+from Data.queries.student import get_student_progress
 
 app = Flask(__name__)
 app.secret_key = "geheimesleutel"
@@ -204,6 +206,19 @@ def set_role(role):
         return redirect(url_for("docent"))
 
     return redirect(url_for("index"))
+@app.route("/api/progress")
+def api_progress():
+    leerling_id = 1  # tijdelijk hardcoded, net als in dashboard-student
+    vak_id = request.args.get("vak_id", type=int) or 1
+
+    conn = get_db_connection()
+    data = get_student_progress(conn, leerling_id, vak_id)
+    conn.close()
+
+    # omzetten naar JSON
+    data_json = [{"date": row["date"], "score": row["score"]} for row in data]
+    return jsonify(data_json)
+
 
 if __name__ == "__main__":
     db.init_database()
