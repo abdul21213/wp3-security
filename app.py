@@ -77,7 +77,7 @@ def student():
                 color = "success"
             elif score >= 40:
                 status = "Gemiddeld"
-                color = "orange"
+                color = "warning"
             else:
                 status = "Zwak"
                 color = "danger"
