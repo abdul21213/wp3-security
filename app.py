@@ -5,7 +5,7 @@ import Data.database as db
 from services.progress import LEVELS, score_pct, kleurklasse
 from collections import defaultdict
 from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
-from Data.queries.student import get_vakken, get_leerdoelen
+from Data.queries.student import get_vakken, get_leerdoelen, get_kernwoorden
 from flask import jsonify
 from Data.queries.student import get_student_progress
 
