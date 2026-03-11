@@ -1,0 +1,74 @@
+<div class="dash">
+  <h3>Jouw voortgang per niveau</h3>
+
+  <div class="level-grid">
+    {% for c in level_cards %}
+      <div class="level-card">
+        <div class="level-top">
+          <strong>{{ c.level }}</strong>
+
+          {% if c.has_data %}
+            <span class="meta">
+              {{ c.pct }}%
+              {% if c.delta is not none %}
+                {% if c.delta > 0 %}
+                  <span class="delta up">↑ {{ c.delta }}%</span>
+                {% elif c.delta < 0 %}
+                  <span class="delta down">↓ {{ (c.delta * -1) }}%</span>
+                {% else %}
+                  <span class="delta flat">→ 0%</span>
+                {% endif %}
+              {% endif %}
+            </span>
+          {% else %}
+            <span class="meta">geen data</span>
+          {% endif %}
+        </div>
+
+        {% if c.has_data %}
+          <div class="bar">
+            <div class="fill {{ c.class }}" style="width: {{ c.pct }}%"></div>
+          </div>
+          <div class="small">Laatste meting: {{ c.date }}</div>
+        {% else %}
+          <div class="small">Maak eerst opdrachten/toetsen voor dit niveau.</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<hr class="sep">
+
+{% if resultaten and resultaten|length > 0 %}
+<table class="resultaten-tabel">
+  <thead>
+    <tr>
+      <th>Datum</th>
+      <th>Vak</th>
+      <th>Test type</th>
+      <th>Leerdoel</th>
+      <th>Level</th>
+      <th>Kennen</th>
+      <th>Kunnen</th>
+      <th>Confidence</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in resultaten %}
+    <tr>
+      <td>{{ r["snapshot_at"] }}</td>
+      <td>{{ r["vak_naam"] }}</td>
+      <td>{{ r["test_type"] }}</td>
+      <td>{{ r["leerdoel_titel"] }}</td>
+      <td>{{ r["level"] }}</td>
+      <td>{{ "%.2f"|format(r["kennen"]) }}</td>
+      <td>{{ "%.2f"|format(r["kunnen"]) }}</td>
+      <td>{{ "%.2f"|format(r["confidence"]) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Geen resultaten gevonden.</p>
+{% endif %}
