@@ -1,0 +1,59 @@
+# Python
+*.py[cod]
+*$py.class
+__pycache__/
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# venv
+.venv/
+venv/
+ENV/
+env/
+
+# Database - NIET AAN ZITTEN
+*.db
+*.sqlite
+*.sqlite3
+database.db
+database - kopie.db
+
+# IDE stuff
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# flask
+instance/
+.webassets-cache
+.env
+.flaskenv
+
+# OS shit
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data stuff
+Data/*.db
+Data/database.db
+Data/database - kopie.db
+*.zip
+
+# temp files
+*.tmp
+*.bak
