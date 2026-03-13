@@ -158,7 +158,6 @@ def docent():
     if session.get("role") != "docent":
         return redirect(url_for("login_docent"))
 
-    return render_template("dashboard-docent.html")
     docent_id = 1  # tijdelijk hardcoded
 
     conn = get_db_connection()

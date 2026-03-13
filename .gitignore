@@ -17,11 +17,10 @@ ENV/
 env/
 
 # Database - NIET AAN ZITTEN
-*.db
+Data/database.db
+Data/database - kopie.db
 *.sqlite
 *.sqlite3
-database.db
-database - kopie.db
 
 # IDE stuff
 .vscode/
@@ -49,9 +48,6 @@ Thumbs.db
 htmlcov/
 
 # Data stuff
-Data/*.db
-Data/database.db
-Data/database - kopie.db
 *.zip
 
 # temp files
