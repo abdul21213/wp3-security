@@ -4,6 +4,8 @@ import os
 import Data.database as db
 from services.progress import LEVELS, score_pct, kleurklasse
 from collections import defaultdict
+from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
+from Data.queries.student import get_vakken, get_leerdoelen, get_kernwoorden
 from Data.queries.docent import (
     get_klassen,
     get_leerlingen,
@@ -45,16 +47,10 @@ def login_student():
 
 @app.route("/dashboard-student")
 def student():
-
-    if session.get("role") != "student":
-        return redirect(url_for("login_student"))
-
     leerling_id = 1  # tijdelijk hardcoded
-
     conn = get_db_connection()
 
     vakken = get_vakken(conn, leerling_id)
-
     vak_id = request.args.get("vak_id", type=int)
     if vak_id is None and vakken:
         vak_id = vakken[0]["vak_id"]
@@ -66,7 +62,6 @@ def student():
 
         for r in resultaten:
             score = r["gemiddelde"] or 0
-
             if score >= 0.75:
                 status, color = "Sterk", "success"
             elif score >= 0.5:
@@ -81,13 +76,38 @@ def student():
                 "color": color
             })
 
+        kernwoorden_result = get_kernwoorden(conn, leerling_id, vak_id)
+        kernwoorden_data = []
+        for k in kernwoorden_result:
+            score = round(k["gemiddelde"] * 100)
+            if score >= 70:
+                status = "Sterk"
+                color = "success"
+            elif score >= 40:
+                status = "Gemiddeld"
+                color = "warning"
+            else:
+                status = "Zwak"
+                color = "danger"
+            kernwoorden_data.append({
+                "woord": k["kernwoord"],
+                "leerdoel": k["leerdoel"],
+                "score": score,
+                "status": status,
+                "color": color
+            })
+
+    else:
+        kernwoorden_data = []
+
     conn.close()
 
     return render_template(
         "dashboard-student.html",
         vakken=vakken,
         gekozen_vak_id=vak_id,
-        leerdoelen=leerdoelen
+        leerdoelen=leerdoelen,
+        kernwoorden_data=kernwoorden_data
     )
 
 @app.route("/resultaten-student")

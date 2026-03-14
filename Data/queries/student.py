@@ -38,3 +38,22 @@ def get_student_progress(conn, leerling_id, vak_id):
         ORDER BY sn.datum
     """
     return conn.execute(query, (leerling_id, vak_id)).fetchall()
+
+def get_kernwoorden(conn, leerling_id, vak_id):
+    query = """
+    SELECT 
+        l.titel AS leerdoel,
+        k.woord AS kernwoord,
+        AVG((sc.kennen + sc.kunnen) / 2.0) AS gemiddelde
+    FROM leerdoel l
+    JOIN snapshot sn ON sn.leerdoel_id = l.leerdoel_id
+    JOIN dataset d ON sn.dataset_id = d.dataset_id
+    JOIN score sc ON sc.snapshot_id = sn.snapshot_id
+    JOIN leerdoel_kernwoord lk ON lk.leerdoel_id = l.leerdoel_id
+    JOIN kernwoord k ON k.kernwoord_id = lk.kernwoord_id
+    WHERE d.leerling_id = ?
+      AND d.vak_id = ?
+    GROUP BY l.leerdoel_id, k.kernwoord_id
+    ORDER BY l.titel
+    """
+    return conn.execute(query, (leerling_id, vak_id)).fetchall()
