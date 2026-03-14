@@ -4,7 +4,13 @@ import os
 import Data.database as db
 from services.progress import LEVELS, score_pct, kleurklasse
 from collections import defaultdict
-from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
+from Data.queries.docent import (
+    get_klassen,
+    get_leerlingen,
+    get_leerdoel_overzicht,
+    get_leerling_leerdoel_overzicht,
+    get_leerling_taxonomie_scores,
+)
 from Data.queries.student import get_vakken, get_leerdoelen
 from flask import jsonify
 from Data.queries.student import get_student_progress
@@ -165,21 +171,49 @@ def docent():
     klassen = get_klassen(conn, docent_id)
 
     klas_id = request.args.get("klas_id", type=int)
-    leerling_id = request.args.get("leerling_id", type=int)  # NIEUW
-    
+    leerling_id = request.args.get("leerling_id", type=int)
+
     if klas_id is None and klassen:
         klas_id = klassen[0]["klas_id"]
 
     leerlingen = []
     leerdoel_overzicht = []
-    geselecteerde_leerling = None  # NIEUW
-    
+    geselecteerde_leerling = None
+    level_cards = []
+
     if klas_id is not None:
         leerlingen = get_leerlingen(conn, klas_id)
-        
+
         if leerling_id is not None:
             leerdoel_overzicht = get_leerling_leerdoel_overzicht(conn, leerling_id)
             geselecteerde_leerling = next((l for l in leerlingen if l["leerling_id"] == leerling_id), None)
+
+            taxonomie_resultaten = get_leerling_taxonomie_scores(conn, leerling_id)
+            per_level = defaultdict(list)
+
+            for row in taxonomie_resultaten:
+                per_level[row["level"]].append(row)
+
+            for lvl in LEVELS:
+                rows = per_level.get(lvl, [])
+                if not rows:
+                    continue
+
+                latest_pct = round((rows[0]["gemiddelde"] or 0) * 100)
+
+                delta = None
+                if len(rows) > 1:
+                    vorige_pct = round((rows[1]["gemiddelde"] or 0) * 100)
+                    delta = latest_pct - vorige_pct
+
+                level_cards.append({
+                    "level": lvl,
+                    "has_data": True,
+                    "pct": latest_pct,
+                    "class": kleurklasse(latest_pct),
+                    "date": rows[0]["snapshot_at"],
+                    "delta": delta
+                })
         else:
             leerdoel_overzicht = get_leerdoel_overzicht(conn, klas_id)
 
@@ -191,8 +225,10 @@ def docent():
         gekozen_klas_id=klas_id,
         leerlingen=leerlingen,
         leerdoel_overzicht=leerdoel_overzicht,
-        geselecteerde_leerling=geselecteerde_leerling  # NIEUW
+        geselecteerde_leerling=geselecteerde_leerling,
+        level_cards=level_cards
     )
+
 
 @app.route("/set-role/<role>")
 def set_role(role):
