@@ -64,29 +64,30 @@ def get_leerdoel_overzicht(conn: sqlite3.Connection, klas_id: int) -> List[dict]
     GROUP BY l.leerdoel_id
     ORDER BY gemiddelde DESC
     """
-    
+
     cur.execute(query, (klas_id,))
     resultaten = cur.fetchall()
-    
+
     leerdoel_overzicht = []
     for r in resultaten:
         score = r["gemiddelde"] or 0
-        
+
         if score >= 0.75:
             status, color = "Sterk", "success"
         elif score >= 0.5:
             status, color = "Voldoende", "warning"
         else:
             status, color = "Zwak", "danger"
-        
+
         leerdoel_overzicht.append({
             "titel": r["titel"],
             "score": round(score * 100),
             "status": status,
             "color": color
         })
-    
+
     return leerdoel_overzicht
+
 
 def get_leerling_leerdoel_overzicht(conn: sqlite3.Connection, leerling_id: int) -> List[dict]:
     if conn is None or leerling_id is None:
@@ -96,7 +97,7 @@ def get_leerling_leerdoel_overzicht(conn: sqlite3.Connection, leerling_id: int) 
     query = """
     SELECT l.leerdoel_id,
            l.titel,
-           v.naam as vak_naam,
+           v.naam AS vak_naam,
            AVG((sc.kennen + sc.kunnen) / 2.0) AS gemiddelde
     FROM leerdoel l
     JOIN snapshot sn ON sn.leerdoel_id = l.leerdoel_id
@@ -116,21 +117,21 @@ def get_leerling_leerdoel_overzicht(conn: sqlite3.Connection, leerling_id: int) 
     GROUP BY l.leerdoel_id, v.vak_id
     ORDER BY v.naam, gemiddelde DESC
     """
-    
+
     cur.execute(query, (leerling_id, leerling_id))
     resultaten = cur.fetchall()
-    
+
     leerdoel_overzicht = []
     for r in resultaten:
         score = r["gemiddelde"] or 0
-        
+
         if score >= 0.75:
             status, color = "Sterk", "success"
         elif score >= 0.5:
             status, color = "Voldoende", "warning"
         else:
             status, color = "Zwak", "danger"
-        
+
         leerdoel_overzicht.append({
             "titel": r["titel"],
             "vak_naam": r["vak_naam"],
@@ -138,5 +139,25 @@ def get_leerling_leerdoel_overzicht(conn: sqlite3.Connection, leerling_id: int) 
             "status": status,
             "color": color
         })
-    
+
     return leerdoel_overzicht
+
+
+def get_leerling_taxonomie_scores(conn: sqlite3.Connection, leerling_id: int) -> List[sqlite3.Row]:
+    if conn is None or leerling_id is None:
+        return []
+
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT level,
+               snapshot_at,
+               AVG((kennen + kunnen) / 2.0) AS gemiddelde
+        FROM taxonomy
+        WHERE leerling_id = ?
+        GROUP BY level, snapshot_at
+        ORDER BY level, snapshot_at DESC
+        """,
+        (leerling_id,),
+    )
+    return cur.fetchall()
