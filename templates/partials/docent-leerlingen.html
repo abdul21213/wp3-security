@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <h2 class="h5 card-title">Leerlingen</h2>
+
+    {% if leerlingen %}
+      <div class="students-scroll">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover align-middle">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Voornaam</th>
+                <th>Achternaam</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for l in leerlingen %}
+                <tr
+                  style="cursor: pointer;"
+                  onclick="window.location.href='/dashboard-docent?klas_id={{ gekozen_klas_id }}&leerling_id={{ l.leerling_id }}';">
+                  <td>{{ l.leerling_id }}</td>
+                  <td>{{ l.voornaam }}</td>
+                  <td>{{ l.achternaam }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">Geen leerlingen gevonden (of nog geen klas gekozen).</p>
+    {% endif %}
+  </div>
+</div>
+</body>
+</html>
