@@ -472,3 +472,8 @@ def import_json_into_db():
 
     conn.commit()
     conn.close()
+
+def zoek_leerlingen(conn, klas_id, query):
+    return conn.execute("""
+        SELECT * FROM leerling WHERE klas_id = ? AND naam LIKE ?
+        """, (klas_id, f"%{query}%")).fetchall()
