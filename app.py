@@ -16,6 +16,7 @@ from Data.queries.docent import (
 from Data.queries.student import get_vakken, get_leerdoelen
 from flask import jsonify
 from Data.queries.student import get_student_progress
+from Data.database import zoek_leerlingen
 
 app = Flask(__name__)
 app.secret_key = "geheimesleutel"
@@ -274,6 +275,16 @@ def api_progress():
     data_json = [{"date": row["date"], "score": row["score"]} for row in data]
     return jsonify(data_json)
 
+@app.route("/api/zoek_leerlingen")
+def api_zoek_leerling():
+    query = request.args.get("query", "")
+    klas_id = request.args.get("klas_id", type=int)
+
+    conn = get_db_connection()
+    leerlingen = zoek_leerlingen(conn, klas_id, query)
+    conn.close()
+
+    return jsonify([dict(1) for 1 in leerlingen])
 
 if __name__ == "__main__":
     db.init_database()
