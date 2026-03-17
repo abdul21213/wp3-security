@@ -1,11 +1,9 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 import sqlite3
 import os
 import Data.database as db
-from services.progress import LEVELS, score_pct, kleurklasse
 from collections import defaultdict
-from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
-from Data.queries.student import get_vakken, get_leerdoelen, get_kernwoorden
+from services.progress import LEVELS, score_pct, kleurklasse
 from Data.queries.docent import (
     get_klassen,
     get_leerlingen,
@@ -13,9 +11,7 @@ from Data.queries.docent import (
     get_leerling_leerdoel_overzicht,
     get_leerling_taxonomie_scores,
 )
-from Data.queries.student import get_vakken, get_leerdoelen
-from flask import jsonify
-from Data.queries.student import get_student_progress
+from Data.queries.student import get_vakken, get_leerdoelen, get_kernwoorden, get_student_progress
 
 app = Flask(__name__)
 app.secret_key = "geheimesleutel"
@@ -261,6 +257,23 @@ def set_role(role):
         return redirect(url_for("docent"))
 
     return redirect(url_for("index"))
+@app.route("/dashboard-docent/leerlingen-fragment")
+def dashboard_docent_leerlingen_fragment():
+    if session.get("role") != "docent":
+        return "", 403
+
+    klas_id = request.args.get("klas_id", type=int)
+
+    conn = get_db_connection()
+    leerlingen = get_leerlingen(conn, klas_id) if klas_id is not None else []
+    conn.close()
+
+    return render_template(
+        "partials/docent-leerlingen.html",
+        leerlingen=leerlingen,
+        gekozen_klas_id=klas_id,
+        geselecteerde_leerling=None
+    )
 @app.route("/api/progress")
 def api_progress():
     leerling_id = 1  # tijdelijk hardcoded, net als in dashboard-student
