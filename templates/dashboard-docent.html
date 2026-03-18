@@ -43,7 +43,10 @@
 
         {% if leerlingen %}
           <div class="students-scroll">
-              <input type="text" id="search" placeholder="Zoek leerling...">
+              <form method="get" action="dashboard-docent.html">
+                  <input type="hidden" name="klas_id" value="{{ gekozen_klas_id }}">
+                  <input type="text" name="search" placeholder="Zoek leerling..." class="form-control">
+              </form>
             <div class="table-responsive">
               <table class="table table-sm table-hover align-middle">
                 <thead>
