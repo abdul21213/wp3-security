@@ -284,7 +284,7 @@ def api_zoek_leerling():
     leerlingen = zoek_leerlingen(conn, klas_id, query)
     conn.close()
 
-    return jsonify([dict(1) for 1 in leerlingen])
+    return jsonify([dict(l) for l in leerlingen])
 
 if __name__ == "__main__":
     db.init_database()

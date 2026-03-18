@@ -43,6 +43,7 @@
 
         {% if leerlingen %}
           <div class="students-scroll">
+              <input type="text" id="search" placeholder="Zoek leerling...">
             <div class="table-responsive">
               <table class="table table-sm table-hover align-middle">
                 <thead>
@@ -52,7 +53,7 @@
                     <th>Achternaam</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody id="leerlingen-lijst">
                   {% for l in leerlingen %}
                     <tr
                       style="cursor: pointer;"
