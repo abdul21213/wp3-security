@@ -16,7 +16,7 @@ from Data.queries.docent import (
 from Data.queries.student import get_vakken, get_leerdoelen
 from flask import jsonify
 from Data.queries.student import get_student_progress
-from Data.database import zoek_leerlingen
+from Data.database import zoek_leerlingen, zoek_leerlingen_in_database
 
 app = Flask(__name__)
 app.secret_key = "geheimesleutel"
@@ -193,6 +193,7 @@ def docent():
 
     klas_id = request.args.get("klas_id", type=int)
     leerling_id = request.args.get("leerling_id", type=int)
+    search = request.args.get("search")
 
     if klas_id is None and klassen:
         klas_id = klassen[0]["klas_id"]
@@ -203,7 +204,10 @@ def docent():
     level_cards = []
 
     if klas_id is not None:
-        leerlingen = get_leerlingen(conn, klas_id)
+        if search:
+            leerlingen = zoek_leerlingen_in_database(conn, search, klas_id)
+        else:
+            leerlingen = get_leerlingen(conn, klas_id)
 
         if leerling_id is not None:
             leerdoel_overzicht = get_leerling_leerdoel_overzicht(conn, leerling_id)
