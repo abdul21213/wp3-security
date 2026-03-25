@@ -16,7 +16,7 @@ from Data.queries.docent import (
 from Data.queries.student import get_vakken, get_leerdoelen
 from flask import jsonify
 from Data.queries.student import get_student_progress
-from Data.database import zoek_leerlingen, zoek_leerlingen_in_database
+from Data.database import zoek_leerlingen
 
 app = Flask(__name__)
 app.secret_key = "geheimesleutel"
@@ -205,7 +205,7 @@ def docent():
 
     if klas_id is not None:
         if search:
-            leerlingen = zoek_leerlingen_in_database(conn, search, klas_id)
+            leerlingen = zoek_leerlingen(conn, klas_id, search)
         else:
             leerlingen = get_leerlingen(conn, klas_id)
 

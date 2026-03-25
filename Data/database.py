@@ -475,15 +475,8 @@ def import_json_into_db():
 
 def zoek_leerlingen(conn, klas_id, query):
     return conn.execute("""
-        SELECT * FROM leerling WHERE klas_id = ? AND naam LIKE ?
-        """, (klas_id, f"%{query}%")).fetchall()
-
-def zoek_leerlingen_in_database(conn, search, klas_id):
-    cur = conn.cursor()
-
-    cur.execute("""
-        SELECT leerling_id, voornaam, achternaam FROM leerling WHERE klas_id = ? AND (voornaam LIKE ? OR achternaam LIKE ?)
-    """, (klas_id, f"%{search}%", f"%{search}%"))
-
-    rows = cur.fetchall()
-    return rows
+        SELECT leerling_id, voornaam, achternaam
+        FROM leerling
+        WHERE klas_id = ?
+        AND (voornaam LIKE ? OR achternaam LIKE ?)
+        """, (klas_id, f"%{query}%", f"%{query}%")).fetchall()
