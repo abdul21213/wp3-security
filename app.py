@@ -251,6 +251,9 @@ def docent():
 @app.route("/set-role/<role>")
 def set_role(role):
     session["role"] = role
+    session.clear()
+
+    session["role"] = role
 
     if role == "student":
         return redirect(url_for("student"))
