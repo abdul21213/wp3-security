@@ -45,7 +45,7 @@
           <div class="students-scroll">
               <form method="get" action="{{ url_for('docent') }}" class="mb-3 d-flex gap-2">
                   <input type="hidden" name="klas_id" value="{{ gekozen_klas_id }}">
-                  <input type="text" name="search" placeholder="Zoek leerling..." class="form-control">
+                  <input type="text" id="search" name="search" placeholder="Zoek leerling..." class="form-control">
                   <button type="submit" class="btn btn-primary">Zoeken</button>
               </form>
             <div class="table-responsive">
@@ -168,7 +168,7 @@
             const query = this.value;
             const klasId = document.querySelector("select[name='klas_id']").value;
 
-            fetch(`zoek_leerlingen?query=${query}&klas_id=${klasId}`)
+            fetch(`/api/zoek_leerlingen?query=${query}&klas_id=${klasId}`)
                 .then(response => response.json())
                 .then(data => {
                     const tbody = document.getElementById("leerlingen-lijst");
@@ -182,7 +182,7 @@
                             <td>${leerling.voornaam}</td>
                             <td>${leerling.achternaam}</td>
                         `;
-                        tbody.appenChild(row);
+                        tbody.appendChild(row);
                     });
                 });
         });
