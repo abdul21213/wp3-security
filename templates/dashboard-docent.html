@@ -162,6 +162,30 @@
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getEelementById("search");
+        const searchInput = document.getElementById("search");
+
+        searchInput.addEventListener("input", function() {
+            const query = this.value;
+            const klasId = document.querySelector("select[name='klas_id']").value;
+
+            fetch(`zoek_leerlingen?query=${query}&klas_id=${klasId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById("leerlingen-lijst");
+                    tbody.innerHTML = "";
+
+                    data.forEach(leerling => {
+                        const row = document.createElement("tr");
+
+                        row.innerHTML = `
+                            <td>${leerling.leerling_id}</td>
+                            <td>${leerling.voornaam}</td>
+                            <td>${leerling.achternaam}</td>
+                        `;
+                        tbody.appenChild(row);
+                    });
+                });
+        });
+    });
 </script>
 {% endblock %}
