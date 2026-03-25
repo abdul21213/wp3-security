@@ -43,6 +43,8 @@ def login_student():
 
 @app.route("/dashboard-student")
 def student():
+    if session.get("role") != "student":
+        return redirect(url_for("login_student"))
     leerling_id = 1  # tijdelijk hardcoded
     conn = get_db_connection()
 
@@ -249,6 +251,9 @@ def docent():
 @app.route("/set-role/<role>")
 def set_role(role):
     session["role"] = role
+    session.clear()
+
+    session["role"] = role
 
     if role == "student":
         return redirect(url_for("student"))
@@ -287,6 +292,10 @@ def api_progress():
     data_json = [{"date": row["date"], "score": row["score"]} for row in data]
     return jsonify(data_json)
 
+@app.route("/uitloggen")
+def uitloggen():
+    session.clear()
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     db.init_database()
