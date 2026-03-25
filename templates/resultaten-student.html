@@ -1,70 +1,80 @@
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <title>Resultaten</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='resultaten-student.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Resultaten{% endblock %}
+
+{% block head %}
+ <link rel="stylesheet" href="{{ url_for('static', filename='resultaten-student.css') }}">
+{% endblock %}
+
+{% block content %}
 <div class="resultaten-container">
-    <h1>Resultaten</h1>
-    <h2>{{ voornaam }}</h2>
-
-    <div class="filters">
-        <label>Vak:
-            <select id="vak_id">
-                <option value="">Alles</option>
-                {% for v in vakken %}
-                    <option value="{{ v['vak_id'] }}">{{ v['naam'] }}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <label>Level:
-            <select id="level">
-                <option value="">Alles</option>
-                <option value="Onthouden">Onthouden</option>
-                <option value="Begrijpen">Begrijpen</option>
-                <option value="Toepassen">Toepassen</option>
-                <option value="Analyseren">Analyseren</option>
-            </select>
-        </label>
-
-        <label>Leerdoel:
-            <select id="leerdoel">
-                <option value="">Alles</option>
-                {% for ld in leerdoelen %}
-                <option value="{{ ld['leerdoel_id'] }}">
-                    {{ ld['leerdoel_id'] }} — {{ ld['titel'] }}
-                </option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <label>Test type:
-            <select id="test_type">
-                <option value="">Alles</option>
-                <option value="test">test</option>
-                <option value="observatie">observatie</option>
-                <option value="project">project</option>
-                <option value="quiz">quiz</option>
-            </select>
-        </label>
-
-        <button type = "button" id="resetBtn">Reset</button>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1 class="mb-1">Resultaten</h1>
+      <h2>{{ voornaam }}</h2>
     </div>
+    <a href="/dashboard-student" class="btn btn-outline-secondary btn-sm">
+      ← Terug
+    </a>
+  </div>
 
-    <div id="resultaten-placeholder">
-  <p>Kies filters om resultaten te zien.</p>
-    </div>
+  <div class="filters">
+    <label>Vak:
+      <select id="vak_id">
+        <option value="">Alles</option>
+        {% for v in vakken %}
+          <option value="{{ v['vak_id'] }}">{{ v['naam'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Level:
+      <select id="level">
+        <option value="">Alles</option>
+        <option value="Onthouden">Onthouden</option>
+        <option value="Begrijpen">Begrijpen</option>
+        <option value="Toepassen">Toepassen</option>
+        <option value="Analyseren">Analyseren</option>
+      </select>
+    </label>
+
+    <label>Leerdoel:
+      <select id="leerdoel">
+        <option value="">Alles</option>
+        {% for ld in leerdoelen %}
+          <option value="{{ ld['leerdoel_id'] }}">
+            {{ ld['leerdoel_id'] }} — {{ ld['titel'] }}
+          </option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Test type:
+      <select id="test_type">
+        <option value="">Alles</option>
+        <option value="test">test</option>
+        <option value="observatie">observatie</option>
+        <option value="project">project</option>
+        <option value="quiz">quiz</option>
+      </select>
+    </label>
+
+    <button type="button" id="resetBtn">Reset</button>
+  </div>
+
+  <div id="resultaten-placeholder">
+    <p>Kies filters om resultaten te zien.</p>
+  </div>
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
 function laadResultaten() {
   const vakId = document.getElementById("vak_id").value;
   const level = document.getElementById("level").value;
-  const leerdoel = document.getElementById("leerdoel").value;   
-  const testType = document.getElementById("test_type").value;  
+  const leerdoel = document.getElementById("leerdoel").value;
+  const testType = document.getElementById("test_type").value;
 
   const params = new URLSearchParams();
   if (vakId) params.append("vak_id", vakId);
@@ -84,11 +94,9 @@ function laadResultaten() {
     });
 }
 
-
 ["vak_id", "level", "leerdoel", "test_type"].forEach(id => {
   document.getElementById(id).addEventListener("change", laadResultaten);
 });
-
 
 document.getElementById("resetBtn").addEventListener("click", () => {
   document.getElementById("vak_id").value = "";
@@ -96,10 +104,9 @@ document.getElementById("resetBtn").addEventListener("click", () => {
   document.getElementById("leerdoel").value = "";
   document.getElementById("test_type").value = "";
 
-    laadResultaten();
+  laadResultaten();
 });
 
 laadResultaten();
 </script>
-</body>
-</html>
+{% endblock %}

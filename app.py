@@ -1,11 +1,9 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 import sqlite3
 import os
 import Data.database as db
-from services.progress import LEVELS, score_pct, kleurklasse
 from collections import defaultdict
-from Data.queries.docent import get_klassen, get_leerlingen, get_leerdoel_overzicht, get_leerling_leerdoel_overzicht
-from Data.queries.student import get_vakken, get_leerdoelen, get_kernwoorden
+from services.progress import LEVELS, score_pct, kleurklasse
 from Data.queries.docent import (
     get_klassen,
     get_leerlingen,
@@ -13,9 +11,9 @@ from Data.queries.docent import (
     get_leerling_leerdoel_overzicht,
     get_leerling_taxonomie_scores,
 )
-from Data.queries.student import get_vakken, get_leerdoelen
+
+from Data.queries.student import get_vakken, get_leerdoelen, get_student_progress, get_kernwoorden
 from flask import jsonify
-from Data.queries.student import get_student_progress
 from Data.database import zoek_leerlingen
 
 app = Flask(__name__)
@@ -48,6 +46,8 @@ def login_student():
 
 @app.route("/dashboard-student")
 def student():
+    if session.get("role") != "student":
+        return redirect(url_for("login_student"))
     leerling_id = 1  # tijdelijk hardcoded
     conn = get_db_connection()
 
@@ -258,6 +258,9 @@ def docent():
 @app.route("/set-role/<role>")
 def set_role(role):
     session["role"] = role
+    session.clear()
+
+    session["role"] = role
 
     if role == "student":
         return redirect(url_for("student"))
@@ -266,6 +269,23 @@ def set_role(role):
         return redirect(url_for("docent"))
 
     return redirect(url_for("index"))
+@app.route("/dashboard-docent/leerlingen-fragment")
+def dashboard_docent_leerlingen_fragment():
+    if session.get("role") != "docent":
+        return "", 403
+
+    klas_id = request.args.get("klas_id", type=int)
+
+    conn = get_db_connection()
+    leerlingen = get_leerlingen(conn, klas_id) if klas_id is not None else []
+    conn.close()
+
+    return render_template(
+        "partials/docent-leerlingen.html",
+        leerlingen=leerlingen,
+        gekozen_klas_id=klas_id,
+        geselecteerde_leerling=None
+    )
 @app.route("/api/progress")
 def api_progress():
     leerling_id = 1  # tijdelijk hardcoded, net als in dashboard-student
@@ -289,6 +309,11 @@ def api_zoek_leerling():
     conn.close()
 
     return jsonify([dict(l) for l in leerlingen])
+  
+@app.route("/uitloggen")
+def uitloggen():
+    session.clear()
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     db.init_database()
