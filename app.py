@@ -43,6 +43,8 @@ def login_student():
 
 @app.route("/dashboard-student")
 def student():
+    if session.get("role") != "student":
+        return redirect(url_for("login_student"))
     leerling_id = 1  # tijdelijk hardcoded
     conn = get_db_connection()
 
