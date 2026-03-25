@@ -287,6 +287,10 @@ def api_progress():
     data_json = [{"date": row["date"], "score": row["score"]} for row in data]
     return jsonify(data_json)
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     db.init_database()
