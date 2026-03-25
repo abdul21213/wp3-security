@@ -292,8 +292,8 @@ def api_progress():
     data_json = [{"date": row["date"], "score": row["score"]} for row in data]
     return jsonify(data_json)
 
-@app.route("/logout")
-def logout():
+@app.route("/uitloggen")
+def uitloggen():
     session.clear()
     return redirect(url_for("index"))
 
