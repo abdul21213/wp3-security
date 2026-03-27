@@ -43,7 +43,7 @@ Volg de onderstaande stappen om de applicatie lokaal te runnen.
 
 ### Dashboard student:
 
-![img_3.png](img_3.png)
+![img3.png](img3.png)
 
 ### Resultaten:
 
