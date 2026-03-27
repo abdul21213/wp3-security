@@ -42,36 +42,36 @@
         <div class="card-body">
           <h2 class="h5 card-title">Leerlingen</h2>
 
-        {% if leerlingen %}
           <div class="students-scroll">
               <form method="get" action="{{ url_for('docent') }}" class="mb-3 d-flex gap-2">
                   <input type="hidden" name="klas_id" value="{{ gekozen_klas_id }}">
                   <input type="text" id="search" name="search" placeholder="Zoek leerling..." class="form-control">
                   <button type="submit" class="btn btn-primary">Zoeken</button>
               </form>
-            <div class="table-responsive">
-              <table class="table table-sm table-hover align-middle">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Voornaam</th>
-                    <th>Achternaam</th>
-                  </tr>
-                </thead>
-                <tbody id="leerlingen-lijst">
-                  {% for l in leerlingen %}
-                    <tr
-                      style="cursor: pointer;"
-                      onclick="window.location.href='/dashboard-docent?klas_id={{ gekozen_klas_id }}&leerling_id={{ l.leerling_id }}';"
-                      class="{% if geselecteerde_leerling and geselecteerde_leerling.leerling_id == l.leerling_id %}table-active{% endif %}">
-                      <td>{{ l.leerling_id }}</td>
-                      <td>{{ l.voornaam }}</td>
-                      <td>{{ l.achternaam }}</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
+              {% if leerlingen %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Voornaam</th>
+                                <th>Achternaam</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leerlingen-lijst">
+                            {% for l in leerlingen %}
+                            <tr
+                                style="cursor: pointer;"
+                                onclick="window.location.href='/dashboard-docent?klas_id={{ gekozen_klas_id }}&leerling_id={{ l.leerling_id }}';"
+                                class="{% if geselecteerde_leerling and geselecteerde_leerling.leerling_id == l.leerling_id %}table-active{% endif %}">
+                                <td>{{ l.leerling_id }}</td>
+                                <td>{{ l.voornaam }}</td>
+                                <td>{{ l.achternaam }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
           {% else %}
             <p class="text-muted mb-0">Geen leerlingen gevonden (of nog geen klas gekozen).</p>
