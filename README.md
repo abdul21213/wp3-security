@@ -66,3 +66,20 @@ Ilias bronnen:
 - LearnWebCode. (2016, October 27). JSON and AJAX tutorial: with real examples [Video]. YouTube. https://www.youtube.com/watch?v=rJesac0_Ftw
 - Learning Software. (2025, February 4). Secure and simple role based authorization in python Flask apps with Keycloak [Video]. YouTube. https://www.youtube.com/watch?v=AKTmvERQu20
 - Dias, P. (2019, May 16). How do I implement a role Based Permission system on a webpage? Stack Overflow. https://stackoverflow.com/questions/56175371/how-do-i-implement-a-role-based-permission-system-on-a-webpage
+
+Karina bronnen:
+
+- Chart.js. (n.d.). Chart.js – Documentatie. https://www.chartjs.org/docs/latest/
+- Bootstrap. (2023). Bootstrap 5.3 – Documentatie. https://getbootstrap.com/docs/5.3/
+- Mozilla Developer Network. (n.d.). Fetch API – MDN Web Docs. https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+- Mozilla Developer Network. (n.d.). MDN Web Docs (algemeen). https://developer.mozilla.org/
+- Nagix. (n.d.). Chart.js Realtime plugin (voor live/scrollende grafieken). https://nagix.github.io/chartjs-plugin-streaming/
+- Flask Documentation. (n.d.). Flask – Documentatie. https://flask.palletsprojects.com/
+- SQLite. (n.d.). SQLite – Officiële documentatie. https://www.sqlite.org/docs.html
+- SQLite. (n.d.). SQLite SQL syntax (SELECT, queries). https://www.sqlite.org/lang.html
+- Python Software Foundation. (2024). Python sqlite3 module – DB-API 2.0 interface voor SQLite. https://docs.python.org/3/library/sqlite3.html
+- W3Schools.com. (n.d.). W3Schools SQL Tutorial. https://www.w3schools.com/sql/
+- JSON.org. (n.d.). JSON – Introductie en structuur. https://www.json.org/json-en.html
+- Chart.js. (n.d.). Chart.js Samples (dynamische grafieken). https://www.chartjs.org/docs/latest/samples/
+- Mozilla Developer Network. (n.d.). Async JavaScript / Promises / async-await. https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
+- Mozilla Developer Network. (n.d.). Foutafhandeling bij fetch (try/catch voorbeeld). https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#handling_errors
