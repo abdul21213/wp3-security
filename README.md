@@ -23,6 +23,10 @@ Volg de onderstaande stappen om de applicatie lokaal te runnen.
 - Email: ``student@test.nl``
 - Password: ``student123``
 
+# ERD
+
+![img_5.png](img_5.png)
+
 # Screenshots
 
 ### Startscherm:
