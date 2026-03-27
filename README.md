@@ -83,3 +83,16 @@ Karina bronnen:
 - Chart.js. (n.d.). Chart.js Samples (dynamische grafieken). https://www.chartjs.org/docs/latest/samples/
 - Mozilla Developer Network. (n.d.). Async JavaScript / Promises / async-await. https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
 - Mozilla Developer Network. (n.d.). Foutafhandeling bij fetch (try/catch voorbeeld). https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#handling_errors
+
+Abdulmajid Hajiibrahim bronnen:
+
+- Programming with Mosh. (2018). JavaScript course for beginners – Your first step to web development [Video]. YouTube.
+- LearnWithW3Schools. (2024, 12 september). Learn AJAX in 20 minutes | Lighting fast and easy AJAX tutorial [Video]. YouTube.
+- NeuralNine. (2019, 23 november). Python intermediate tutorial #8 - Database programming [Video]. YouTube.
+- W3Schools.com. (n.d.-b). https://www.w3schools.com/html/html_forms.asp
+- W3Schools.com. (n.d.-c). https://www.w3schools.com/html/html_form_input_types.asp
+- Buvesa. (2020, June 8). HTML TUTORIAL VOOR BEGINNERS | 👉 Gratis HTML cursus om websites te maken (Nederlands) [Video]. YouTube. https://www.youtube.com/watch?v=gMBUxCgcz1g
+- freeCodeCamp.org. (2019, 28 mei). Learn Flask for Python - Full Tutorial [Video]. YouTube.
+- Fireship. (2022, 22 november). 100+ JavaScript concepts you need to know [Video]. YouTube.
+- MDN Web Docs. (z.d.). JavaScript. MDN Web Docs.
+- Flask Documentation. (z.d.). Quickstart. Pallets. https://flask.palletsprojects.com/en/stable/quickstart/
