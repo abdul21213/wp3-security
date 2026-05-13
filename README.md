@@ -83,3 +83,71 @@ Karina bronnen:
 - Chart.js. (n.d.). Chart.js Samples (dynamische grafieken). https://www.chartjs.org/docs/latest/samples/
 - Mozilla Developer Network. (n.d.). Async JavaScript / Promises / async-await. https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises
 - Mozilla Developer Network. (n.d.). Foutafhandeling bij fetch (try/catch voorbeeld). https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch#handling_errors
+
+
+# **AI verantwoording**
+
+Hoe moet ik per leerling zwakke en sterke kernwoord laten zien op het student dashboard (stap voor stap)  
+Karina Vargas Flores
+0984396
+Conversatie: https://chatgpt.com/share/6a04cedf-9fac-8327-b99f-138d1581bcc0
+Oplossing: Je moet per kernwoord laten zien of een leerling sterk of zwak is. Dat betekent dat je:
+1. Data uit de database ophalen 
+2. Scores per kernwoord berekenen.
+3. Sterk/zwak bepalen 
+4. Naar de template sturen 
+5. Visueel tonen in HTML 
+Ik heb dit verwerkt in de : app.py en student-dashboard.html
+Code regel: app.py 47 t/m 112 en queries in database.py
+en html: 6 t/m 38 
+student.py: 42 t/m 59
+Context: Ik vond het moeilijk om zo uit het niks te beginnen ook vanuit de database, dus ik heb aan Chatgpt gevraagd hoe ik dit stap voor stap moet doen met commits zodat ik hier ook van leer uiteraard.
+Git bestand: Rac-Software-Development/wp3-2026-rest-1b6-fox: rac-software-development-2025-2026-wp3-2026-rest-wp3-2026-starter created by GitHub Classroom
+
+
+Hoe verwerk ik per leerdoel of ik zwak of sterk sta als leerling ? 
+Karina Vargas Flores
+0984396
+Conversatie: https://chatgpt.com/share/6a04d53e-5918-8331-a91b-53c0e4cd4b73
+Oplossing:  PER STAP 
+Een score per leerdoel berekenen 
+Die score visueel duidelijk maken (sterk / gemiddeld / zwak) 
+Het begrijpelijk tonen op het dashboard
+Ik heb dit verwerkt in de : app.py en html
+Code regel: app.py 47 t/m 112 
+en html: 55 t/m 71
+student.py 1 t/m 40
+Context: Ik vond het moeilijk om zo uit het niks te beginnen netzoals met de kernwoorden dus heb ik gevraagd hoe dit moet, het gesprek is lang. Maar het word stap voor stap uitlegd hoe het moet
+Git bestand: Rac-Software-Development/wp3-2026-rest-1b6-fox: rac-software-development-2025-2026-wp3-2026-rest-wp3-2026-starter created by GitHub Classroom
+
+
+Hoe moet ik de database maken ? STAPGEWIJS
+Karina Vargas Flores
+0984396
+Conversatie: https://chatgpt.com/share/6a04d95f-5918-8331-b7ff-a2ad607e60c1
+Oplossing:  PER STAP  Wat ik nu zou doen (concreet todo)
+Voor jouw situatie, in volgorde:
+1.	database.py maken 
+2.	 Models schrijven voor alle tabellen 
+3.	create_all() draaien 
+4.	1 leerling + 1 vak + 1 leerdoel testen 
+5.	pas daarna JSON import
+Ik heb dit verwerkt in de : database.py
+Code regel:  294 t/m 474
+Context:  Zoals ook in de conversatie verteld moest ik als eerst een database maken maar dit is allemaal nieuw en moeilijk dus ik heb het zo op de manier gevraagd dat ik er van leer.
+Git bestand: Rac-Software-Development/wp3-2026-rest-1b6-fox: rac-software-development-2025-2026-wp3-2026-rest-wp3-2026-starter created by GitHub Classroom
+
+
+Hoe maak ik een grafiek over tijd in pycharm met AJAX?
+Karina Vargas Flores
+0984396
+Conversatie: https://chatgpt.com/share/6a04dc71-24e8-8330-aee1-749974005877
+Oplossing: Laten we dit stapsgewijs aanpakken. Ik geef een voorbeeld met Flask, Chart.js en AJAX.
+Ik heb dit verwerkt in de : student-dashboard.html 
+Code regel: 87 t/m 131
+Context: Vorige conversatie kwijt maar ik had het in deze conversatie geplakt dat is dus de eerste vraag, en daarna hoe ik er ajax in verwerk.
+Git bestand: Rac-Software-Development/wp3-2026-rest-1b6-fox: rac-software-development-2025-2026-wp3-2026-rest-wp3-2026-starter created by GitHub Classroom
+
+
+
+
