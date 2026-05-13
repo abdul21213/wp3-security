@@ -43,7 +43,7 @@ Volg de onderstaande stappen om de applicatie lokaal te runnen.
 
 ### Dashboard student:
 
-![img_3.png](img_3.png)
+![img3.png](img3.png)
 
 ### Resultaten:
 
@@ -151,3 +151,15 @@ Git bestand: Rac-Software-Development/wp3-2026-rest-1b6-fox: rac-software-develo
 
 
 
+Abdulmajid Hajiibrahim bronnen:
+
+- Programming with Mosh. (2018). JavaScript course for beginners – Your first step to web development [Video]. YouTube.
+- LearnWithW3Schools. (2024, 12 september). Learn AJAX in 20 minutes | Lighting fast and easy AJAX tutorial [Video]. YouTube.
+- NeuralNine. (2019, 23 november). Python intermediate tutorial #8 - Database programming [Video]. YouTube.
+- W3Schools.com. (n.d.-b). https://www.w3schools.com/html/html_forms.asp
+- W3Schools.com. (n.d.-c). https://www.w3schools.com/html/html_form_input_types.asp
+- Buvesa. (2020, June 8). HTML TUTORIAL VOOR BEGINNERS | 👉 Gratis HTML cursus om websites te maken (Nederlands) [Video]. YouTube. https://www.youtube.com/watch?v=gMBUxCgcz1g
+- freeCodeCamp.org. (2019, 28 mei). Learn Flask for Python - Full Tutorial [Video]. YouTube.
+- Fireship. (2022, 22 november). 100+ JavaScript concepts you need to know [Video]. YouTube.
+- MDN Web Docs. (z.d.). JavaScript. MDN Web Docs.
+- Flask Documentation. (z.d.). Quickstart. Pallets. https://flask.palletsprojects.com/en/stable/quickstart/
