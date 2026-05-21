@@ -101,6 +101,33 @@ Abdulmajid Hajiibrahim bronnen:
 
 # **AI verantwoording**
 
+Hoe moet ik een dummyaccount maken voor de docent en de student in JS (stapsgewijs) 
+Naam: Ilias Chaouki
+Studentnummer: 1115298
+
+Conversatie: https://chatgpt.com/share/6a0f12a8-be7c-83eb-9584-d1de4050061a
+
+Waarvoor gebruikt:
+- Hulp bij het structereren van refinements in Azure Devops
+- Uitleg over dummyaccounts en MVP-functionaliteit
+- Stapgewijs uitleg gekregen bij het implementeren van dummyaccounts 
+- Debugging en stapsgewijze implementatie-uitleg
+
+Context:
+ChatGPT heb ik gebruikt om te leren hoe een dummy login werkt. Verder heb ik het gebruikt om refinements te structureren in Azure DevOps
+
+Bestanden:
+- login.js                     code regel: 1 t/m 48
+- login_docent.html            code regel: 17, 20, 21, 24, 25 en 28
+- login_student.html           code regel: 17, 20, 21, 24, 25 en 28
+
+Ik vond het lastig in het begin, omdat ik nog niet eerder heb gewerkt met JS. Ik heb daarom ChatGPT gebruikt om stap voor stap de leren en te berijpen hoe je dummyaccounts werken.
+
+APA:
+OpenAI. (2026). ChatGPT [Large language model]. https://chatgpt.com/share/6a0f12a8-be7c-83eb-9584-d1de4050061a
+
+
+
 Hoe moet ik per leerling zwakke en sterke kernwoord laten zien op het student dashboard (stap voor stap)  
 Karina Vargas Flores
 0984396
