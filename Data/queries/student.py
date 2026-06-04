@@ -57,3 +57,44 @@ def get_kernwoorden(conn, leerling_id, vak_id):
     ORDER BY l.titel
     """
     return conn.execute(query, (leerling_id, vak_id)).fetchall()
+
+def get_klassikale_vergelijking(conn, leerling_id, vak_id):
+    query = """
+    WITH mijn_klas AS (
+        SELECT klas_id
+        FROM leerling
+        WHERE leerling_id = ?
+    ),
+    mijn_scores AS (
+        SELECT l.leerdoel_id,
+               l.titel,
+               AVG((sc.kennen + sc.kunnen) / 2.0) AS mijn_gemiddelde
+        FROM leerdoel l
+        JOIN snapshot sn ON sn.leerdoel_id = l.leerdoel_id
+        JOIN dataset d ON sn.dataset_id = d.dataset_id
+        JOIN score sc ON sc.snapshot_id = sn.snapshot_id
+        WHERE d.leerling_id = ?
+          AND d.vak_id = ?
+        GROUP BY l.leerdoel_id
+    ),
+    klas_scores AS (
+        SELECT l.leerdoel_id,
+               AVG((sc.kennen + sc.kunnen) / 2.0) AS klas_gemiddelde
+        FROM leerdoel l
+        JOIN snapshot sn ON sn.leerdoel_id = l.leerdoel_id
+        JOIN dataset d ON sn.dataset_id = d.dataset_id
+        JOIN score sc ON sc.snapshot_id = sn.snapshot_id
+        JOIN leerling leer ON leer.leerling_id = d.leerling_id
+        JOIN mijn_klas mk ON mk.klas_id = leer.klas_id
+        WHERE d.vak_id = ?
+        GROUP BY l.leerdoel_id
+    )
+    SELECT m.leerdoel_id,
+           m.titel,
+           m.mijn_gemiddelde,
+           k.klas_gemiddelde
+    FROM mijn_scores m
+    LEFT JOIN klas_scores k ON k.leerdoel_id = m.leerdoel_id
+    ORDER BY m.titel
+    """
+    return conn.execute(query, (leerling_id, leerling_id, vak_id, vak_id)).fetchall()
