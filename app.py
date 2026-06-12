@@ -10,9 +10,11 @@ from Data.queries.docent import (
     get_leerdoel_overzicht,
     get_leerling_leerdoel_overzicht,
     get_leerling_taxonomie_scores,
+    get_leerling_gemiddelden_per_klas,
+    get_taxonomie_gemiddelden_per_klas,
 )
 
-from Data.queries.student import get_vakken, get_leerdoelen, get_student_progress, get_kernwoorden
+from Data.queries.student import get_vakken, get_leerdoelen, get_student_progress, get_kernwoorden, get_klassikale_vergelijking
 from flask import jsonify
 from Data.database import zoek_leerlingen
 
@@ -269,6 +271,31 @@ def set_role(role):
         return redirect(url_for("docent"))
 
     return redirect(url_for("index"))
+
+@app.route("/api/docent/klasanalyse")
+def api_docent_klasanalyse():
+    if session.get("role") != "docent":
+        return jsonify({"error": "Niet ingelogd als docent"}), 403
+
+    klas_id = request.args.get("klas_id", type=int)
+
+    if klas_id is None:
+        return jsonify({"error": "Geen klas gekozen"}), 400
+
+    conn = get_db_connection()
+
+    leerlingen = get_leerling_gemiddelden_per_klas(conn, klas_id)
+    leerdoelen = get_leerdoel_overzicht(conn, klas_id)
+    niveaus = get_taxonomie_gemiddelden_per_klas(conn, klas_id)
+
+    conn.close()
+
+    return jsonify({
+        "leerlingen": leerlingen,
+        "leerdoelen": leerdoelen,
+        "niveaus": niveaus
+    })
+
 @app.route("/dashboard-docent/leerlingen-fragment")
 def dashboard_docent_leerlingen_fragment():
     if session.get("role") != "docent":
@@ -286,6 +313,37 @@ def dashboard_docent_leerlingen_fragment():
         gekozen_klas_id=klas_id,
         geselecteerde_leerling=None
     )
+
+@app.route("/api/klassikale-vergelijking")
+def api_klassikale_vergelijking():
+    if session.get("role") != "student":
+        return jsonify({"error": "Niet ingelogd als student"}), 403
+
+    leerling_id = 1  
+    vak_id = request.args.get("vak_id", type=int)
+
+    if vak_id is None:
+        return jsonify({"error": "Geen vak gekozen"}), 400
+
+    conn = get_db_connection()
+    resultaten = get_klassikale_vergelijking(conn, leerling_id, vak_id)
+    conn.close()
+
+    data = []
+    for r in resultaten:
+        mijn_score = round((r["mijn_gemiddelde"] or 0) * 100)
+        klas_score = round((r["klas_gemiddelde"] or 0) * 100)
+
+        data.append({
+            "leerdoel_id": r["leerdoel_id"],
+            "titel": r["titel"],
+            "mijn_score": mijn_score,
+            "klas_score": klas_score,
+            "verschil": mijn_score - klas_score
+        })
+
+    return jsonify(data)
+
 @app.route("/api/progress")
 def api_progress():
     leerling_id = 1  # tijdelijk hardcoded, net als in dashboard-student

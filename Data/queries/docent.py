@@ -161,3 +161,92 @@ def get_leerling_taxonomie_scores(conn: sqlite3.Connection, leerling_id: int) ->
         (leerling_id,),
     )
     return cur.fetchall()
+
+def get_leerling_gemiddelden_per_klas(conn: sqlite3.Connection, klas_id: int) -> List[dict]:
+    if conn is None or klas_id is None:
+        return []
+
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT leer.leerling_id,
+               leer.voornaam,
+               leer.achternaam,
+               AVG((sc.kennen + sc.kunnen) / 2.0) AS gemiddelde
+        FROM leerling leer
+        JOIN dataset d ON d.leerling_id = leer.leerling_id
+        JOIN snapshot sn ON sn.dataset_id = d.dataset_id
+        JOIN score sc ON sc.snapshot_id = sn.snapshot_id
+        WHERE leer.klas_id = ?
+        GROUP BY leer.leerling_id
+        ORDER BY gemiddelde DESC
+        """,
+        (klas_id,),
+    )
+
+    resultaten = cur.fetchall()
+    leerlingen = []
+
+    for r in resultaten:
+        score = round((r["gemiddelde"] or 0) * 100)
+
+        if score >= 75:
+            status, color = "Sterk", "success"
+        elif score >= 50:
+            status, color = "Voldoende", "warning"
+        else:
+            status, color = "Zwak", "danger"
+
+        naam = r["voornaam"]
+        if r["achternaam"]:
+            naam += " " + r["achternaam"]
+
+        leerlingen.append({
+            "leerling_id": r["leerling_id"],
+            "naam": naam,
+            "score": score,
+            "status": status,
+            "color": color
+        })
+
+    return leerlingen
+
+def get_taxonomie_gemiddelden_per_klas(conn: sqlite3.Connection, klas_id: int) -> List[dict]:
+    if conn is None or klas_id is None:
+        return []
+
+    cur = conn.cursor()
+    cur.execute(
+        """
+        SELECT t.level,
+               AVG((t.kennen + t.kunnen) / 2.0) AS gemiddelde
+        FROM taxonomy t
+        JOIN leerling leer ON leer.leerling_id = t.leerling_id
+        WHERE leer.klas_id = ?
+        GROUP BY t.level
+        ORDER BY gemiddelde DESC
+        """,
+        (klas_id,),
+    )
+
+    resultaten = cur.fetchall()
+    niveaus = []
+
+    for r in resultaten:
+        score = round((r["gemiddelde"] or 0) * 100)
+
+        if score >= 75:
+            status, color = "Sterk", "success"
+        elif score >= 50:
+            status, color = "Voldoende", "warning"
+        else:
+            status, color = "Zwak", "danger"
+
+        niveaus.append({
+            "level": r["level"],
+            "score": score,
+            "status": status,
+            "color": color
+        })
+
+    return niveaus

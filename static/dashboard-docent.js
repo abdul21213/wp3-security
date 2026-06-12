@@ -1,3 +1,68 @@
+function renderAnalyseLijst(titel, items, naamVeld) {
+  if (!items.length) {
+    return `
+      <div class="col-md-4">
+        <h3 class="h6">${titel}</h3>
+        <p class="text-muted mb-0">Geen data gevonden.</p>
+      </div>
+    `;
+  }
+
+  const regels = items.map(item => `
+    <div class="mb-3">
+      <div class="d-flex justify-content-between gap-3">
+        <strong>${item[naamVeld]}</strong>
+        <span class="badge bg-${item.color}">
+          ${item.status} (${item.score}%)
+        </span>
+      </div>
+      <div class="progress mt-2" style="height: 8px;">
+        <div class="progress-bar bg-${item.color}" style="width: ${item.score}%;"></div>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="col-md-4">
+      <h3 class="h6">${titel}</h3>
+      ${regels}
+    </div>
+  `;
+}
+
+function laadKlasanalyse() {
+  const klasSelect = document.getElementById("klas_id");
+  const container = document.getElementById("docentKlasanalyse");
+
+  if (!klasSelect || !container) {
+    return;
+  }
+
+  const klasId = klasSelect.value;
+  container.innerHTML = `<p class="text-muted mb-0">Klasanalyse laden...</p>`;
+
+  fetch("/api/docent/klasanalyse?klas_id=" + encodeURIComponent(klasId))
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Kon klasanalyse niet laden");
+      }
+
+      return response.json();
+    })
+    .then(data => {
+      container.innerHTML = `
+        <div class="row g-4">
+          ${renderAnalyseLijst("Leerlingen", data.leerlingen, "naam")}
+          ${renderAnalyseLijst("Leerdoelen", data.leerdoelen, "titel")}
+          ${renderAnalyseLijst("Niveaus", data.niveaus, "level")}
+        </div>
+      `;
+    })
+    .catch(() => {
+      container.innerHTML = `<p class="text-danger mb-0">Klasanalyse kon niet worden geladen.</p>`;
+    });
+}
+
 function laadLeerlingen() {
   const klasSelect = document.getElementById("klas_id");
   const placeholder = document.getElementById("leerlingen-placeholder");
@@ -46,7 +111,11 @@ function laadLeerlingen() {
 
 document.addEventListener("DOMContentLoaded", function () {
   const klasSelect = document.getElementById("klas_id");
+
   if (klasSelect) {
     klasSelect.addEventListener("change", laadLeerlingen);
+    klasSelect.addEventListener("change", laadKlasanalyse);
   }
+
+  laadKlasanalyse();
 });
