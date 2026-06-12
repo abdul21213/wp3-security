@@ -10,6 +10,8 @@ from Data.queries.docent import (
     get_leerdoel_overzicht,
     get_leerling_leerdoel_overzicht,
     get_leerling_taxonomie_scores,
+    get_leerling_gemiddelden_per_klas,
+    get_taxonomie_gemiddelden_per_klas,
 )
 
 from Data.queries.student import get_vakken, get_leerdoelen, get_student_progress, get_kernwoorden, get_klassikale_vergelijking
@@ -269,6 +271,31 @@ def set_role(role):
         return redirect(url_for("docent"))
 
     return redirect(url_for("index"))
+
+@app.route("/api/docent/klasanalyse")
+def api_docent_klasanalyse():
+    if session.get("role") != "docent":
+        return jsonify({"error": "Niet ingelogd als docent"}), 403
+
+    klas_id = request.args.get("klas_id", type=int)
+
+    if klas_id is None:
+        return jsonify({"error": "Geen klas gekozen"}), 400
+
+    conn = get_db_connection()
+
+    leerlingen = get_leerling_gemiddelden_per_klas(conn, klas_id)
+    leerdoelen = get_leerdoel_overzicht(conn, klas_id)
+    niveaus = get_taxonomie_gemiddelden_per_klas(conn, klas_id)
+
+    conn.close()
+
+    return jsonify({
+        "leerlingen": leerlingen,
+        "leerdoelen": leerdoelen,
+        "niveaus": niveaus
+    })
+
 @app.route("/dashboard-docent/leerlingen-fragment")
 def dashboard_docent_leerlingen_fragment():
     if session.get("role") != "docent":
