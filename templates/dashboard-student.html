@@ -217,6 +217,9 @@ const vakSelect = document.getElementById("vakSelect");
 if (vakSelect) {
   vakSelect.addEventListener("change", function () {
     laadKlassikaleVergelijking(this.value);
+
+    const nieuweUrl = "/dashboard-student?vak_id=" + encodeURIComponent(this.value);
+    window.history.replaceState({}, "", nieuweUrl);
   });
 }
 </script>
