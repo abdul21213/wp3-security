@@ -98,32 +98,34 @@
 
 {% block scripts %}
 <script>
-fetch("/api/progress?vak_id={{ gekozen_vak_id }}")
+const gekozenVakId = "{{ gekozen_vak_id }}";
+
+fetch("/api/progress?vak_id=" + gekozenVakId)
   .then(res => res.json())
   .then(data => {
-    const ctx = document.getElementById('progressChart').getContext('2d');
+    const ctx = document.getElementById("progressChart").getContext("2d");
 
-    if(ctx){
+    if (ctx) {
       const labels = data.map(d => {
         const dt = new Date(d.date);
-        const day = String(dt.getDate()).padStart(2, '0');
-        const month = String(dt.getMonth() + 1).padStart(2, '0');
+        const day = String(dt.getDate()).padStart(2, "0");
+        const month = String(dt.getMonth() + 1).padStart(2, "0");
         const year = dt.getFullYear();
         return `${day}/${month}/${year}`;
       });
 
       new Chart(ctx, {
-        type: 'line',
+        type: "line",
         data: {
           labels: labels,
           datasets: [{
-            label: 'Mijn score',
+            label: "Mijn score",
             data: data.map(d => d.score),
             borderWidth: 3,
-            borderColor: 'rgb(75, 192, 192)',
+            borderColor: "rgb(75, 192, 192)",
             tension: 0.4,
             pointRadius: 5,
-            pointBackgroundColor: 'rgb(0,200,0)'
+            pointBackgroundColor: "rgb(0,200,0)"
           }]
         },
         options: {
@@ -135,6 +137,76 @@ fetch("/api/progress?vak_id={{ gekozen_vak_id }}")
           }
         }
       });
+    }
+  });
+
+fetch("/api/klassikale-vergelijking?vak_id=" + gekozenVakId)
+  .then(res => res.json())
+  .then(data => {
+    const container = document.getElementById("klassikaleVergelijking");
+
+    if (!container) {
+      return;
+    }
+
+    if (!data.length) {
+      container.innerHTML = `<p class="text-muted mb-0">Geen klassikale vergelijking gevonden voor dit vak.</p>`;
+      return;
+    }
+
+    container.innerHTML = "";
+
+    data.forEach(item => {
+      const verschilTekst = item.verschil > 0
+        ? `+${item.verschil}% boven klasgemiddelde`
+        : item.verschil < 0
+          ? `${item.verschil}% onder klasgemiddelde`
+          : "Gelijk aan klasgemiddelde";
+
+      const verschilClass = item.verschil > 0
+        ? "text-success"
+        : item.verschil < 0
+          ? "text-danger"
+          : "text-muted";
+
+      const blok = document.createElement("div");
+      blok.className = "border rounded p-3";
+
+      blok.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+          <strong>${item.titel}</strong>
+          <span class="${verschilClass} fw-semibold text-nowrap">${verschilTekst}</span>
+        </div>
+
+        <div class="mb-2">
+          <div class="d-flex justify-content-between small">
+            <span>Mijn score</span>
+            <span>${item.mijn_score}%</span>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-primary" style="width: ${item.mijn_score}%;"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="d-flex justify-content-between small">
+            <span>Klasgemiddelde</span>
+            <span>${item.klas_score}%</span>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div class="progress-bar bg-secondary" style="width: ${item.klas_score}%;"></div>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(blok);
+    });
+  })
+  .catch(() => {
+    const container = document.getElementById("klassikaleVergelijking");
+
+    if (container) {
+      container.innerHTML = `<p class="text-danger mb-0">Klassikale vergelijking kon niet worden geladen.</p>`;
     }
   });
 </script>
