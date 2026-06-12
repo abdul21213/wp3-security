@@ -69,16 +69,26 @@
         {% else %}
           <p class="text-muted">Nog geen leerdoelen gevonden.</p>
         {% endfor %}
+      <hr>
 
-        <hr>
+      <h2 class="h5 card-title">Mijn voortgang over tijd</h2>
+      <canvas id="progressChart"></canvas>
 
-        <h2 class="h5 card-title">Mijn voortgang over tijd</h2>
-        <canvas id="progressChart"></canvas>
+      <hr>
 
-        <hr>
-        <a href="/resultaten-student" class="btn btn-primary btn-sm mt-2">
-          Bekijk alle resultaten
-        </a>
+      <h2 class="h5 card-title">Vergelijking met klasgemiddelde</h2>
+      <p class="text-muted small mb-3">
+        Bekijk per leerdoel hoe jouw score zich verhoudt tot het gemiddelde van je klas.
+      </p>
+
+      <div id="klassikaleVergelijking" class="d-flex flex-column gap-3">
+        <p class="text-muted mb-0">Klassikale vergelijking laden...</p>
+      </div>
+
+      <hr>
+      <a href="/resultaten-student" class="btn btn-primary btn-sm mt-2">
+        Bekijk alle resultaten
+      </a>
 
       </div>
     </div>
